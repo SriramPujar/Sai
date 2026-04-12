@@ -1,11 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Groq from 'groq-sdk';
 
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-export async function POST(request: NextRequest) {
+export default async function handler(
+  request: VercelRequest,
+  response: VercelResponse
+) {
+  if (request.method !== 'POST') {
+    return response.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
-    const { answer, userContext } = await request.json();
+    const { answer, userContext } = request.body;
     
     const prompt = `
 The user received this spiritual guidance from the 1-720 Sai Baba Answers system:
@@ -27,9 +34,9 @@ Provide a short (2-3 sentences), compassionate, and spiritually grounded reflect
       max_tokens: 500
     });
 
-    return NextResponse.json({ reflection: chat.choices[0]?.message?.content || "" });
+    return response.json({ reflection: chat.choices[0]?.message?.content || "" });
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({ reflection: "" }, { status: 500 });
+    return response.status(500).json({ reflection: "" });
   }
 }

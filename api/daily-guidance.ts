@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Groq from 'groq-sdk';
 
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -9,7 +9,14 @@ Provide personalized morning guidance for a Sai devotee to start their day with 
 Respond in JSON format with keys: content, teaching, action, chapter, mantra.
 `;
 
-export async function POST() {
+export default async function handler(
+  request: VercelRequest,
+  response: VercelResponse
+) {
+  if (request.method !== 'POST') {
+    return response.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
     const chat = await client.chat.completions.create({
       model: "llama-3.3-70b-versatile",
@@ -23,7 +30,7 @@ export async function POST() {
     });
 
     const result = JSON.parse(chat.choices[0]?.message?.content || "{}");
-    return NextResponse.json({
+    return response.json({
       role: "model",
       content: result.content || "",
       teaching: result.teaching || "",
@@ -33,6 +40,6 @@ export async function POST() {
     });
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({ content: "", teaching: "Why fear when I am here?" }, { status: 500 });
+    return response.status(500).json({ content: "", teaching: "Why fear when I am here?" });
   }
 }

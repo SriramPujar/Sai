@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Groq from 'groq-sdk';
 
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -22,29 +22,19 @@ RESPONSE STRUCTURE for Chat:
 - Chapter suggestion from Sai Satcharitra (if relevant).
 - Mantra suggestion (optional).
 
-RESPONSE STRUCTURE for Emotional Comfort:
-- Calming Sai-inspired response.
-- One short grounding exercise.
-- One mantra recommendation.
-- One chapter recommendation.
-- One tiny seva suggestion.
-- "Today's next step".
-
-You MUST respond in valid JSON format with the following schema:
-{
-  "content": "The main compassionate answer",
-  "teaching": "Relevant Sai teaching",
-  "action": "Practical action for today",
-  "chapter": "Suggested chapter (optional)",
-  "mantra": "Suggested mantra (optional)"
-}
-
-IMPORTANT: Only output valid JSON, nothing else.
+You MUST respond in valid JSON format with keys: content, teaching, action, chapter, mantra.
 `;
 
-export async function POST(request: NextRequest) {
+export default async function handler(
+  request: VercelRequest,
+  response: VercelResponse
+) {
+  if (request.method !== 'POST') {
+    return response.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
-    const { query, history } = await request.json();
+    const { query, history } = request.body;
     
     const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
       { role: "system", content: SYSTEM_INSTRUCTION },
@@ -64,7 +54,7 @@ export async function POST(request: NextRequest) {
     });
 
     const result = JSON.parse(chat.choices[0]?.message?.content || "{}");
-    return NextResponse.json({
+    return response.json({
       role: "model",
       content: result.content || "I am here with you. Try again.",
       teaching: result.teaching || "Why fear when I am here?",
@@ -74,9 +64,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({
+    return response.status(500).json({
       content: "I am having trouble connecting right now.",
       teaching: "Why fear when I am here?"
-    }, { status: 500 });
+    });
   }
 }
