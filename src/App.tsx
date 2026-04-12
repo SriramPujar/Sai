@@ -1550,9 +1550,9 @@ export default function App() {
   }, [activeTab, isBackground]);
 
   if (onboardingStep < 3) {
-    const saiBabaPortrait = "https://upload.wikimedia.org/wikipedia/commons/7/73/Sai_Baba_of_Shirdi_portrait.jpg";
-    const saiBabaStatue = "https://live.staticflickr.com/3078/2853282159_c6e3a5d39e_b.jpg";
-    const shirdiTemple = "https://live.staticflickr.com/7372/8728784218_6eeb438f7c_b.jpg";
+    const saiBabaPortrait = "https://images.weserv.nl/?url=https://upload.wikimedia.org/wikipedia/commons/7/73/Sai_Baba_of_Shirdi_portrait.jpg&w=800&h=1000&fit=cover";
+    const saiBabaStatue = "https://images.weserv.nl/?url=https://upload.wikimedia.org/wikipedia/commons/e/e0/Sai_baba_statue.jpg&w=800&h=1000&fit=cover";
+    const shirdiTemple = "https://images.weserv.nl/?url=https://upload.wikimedia.org/wikipedia/commons/6/66/Shri_Sai_Baba_Temple%2C_Shirdi.jpg&w=800&h=1000&fit=cover";
     
     const steps = [
       { 
@@ -1619,7 +1619,7 @@ export default function App() {
         >
           <div className="w-32 h-32 rounded-full overflow-hidden mb-8 border-4 border-primary-fixed/30 shadow-2xl">
             <img 
-              src="https://upload.wikimedia.org/wikipedia/commons/7/73/Sai_Baba_of_Shirdi_portrait.jpg" 
+              src="https://images.weserv.nl/?url=https://upload.wikimedia.org/wikipedia/commons/7/73/Sai_Baba_of_Shirdi_portrait.jpg&w=300&h=300&fit=cover" 
               alt="Sai Baba" 
               className="w-full h-full object-cover object-top"
             />
