@@ -90,12 +90,10 @@ const HomeScreen = ({ onNavigate }: { onNavigate: (s: string) => void }) => {
 
       {/* Daily Guidance */}
       <Card className="relative overflow-hidden group p-0">
-        <div className="h-48 w-full relative">
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/7/73/Sai_Baba_of_Shirdi_portrait.jpg" 
-            alt="Sai Baba" 
-            className="w-full h-full object-cover object-top"
-          />
+        <div className="h-48 w-full relative bg-gradient-to-br from-primary-fixed/30 via-primary/20 to-secondary/20 flex items-center justify-center">
+          <div className="w-24 h-24 rounded-full bg-primary-fixed/20 flex items-center justify-center">
+            <Sparkles size={48} className="text-primary" />
+          </div>
           <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent" />
         </div>
         <div className="relative z-10 p-6 pt-0 space-y-4">
@@ -299,11 +297,9 @@ const SaiBabaAnswersScreen = () => {
             transition={{ repeat: Infinity, duration: 4 }}
             className="absolute inset-0 bg-primary-fixed/30 rounded-full blur-2xl"
           />
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/7/73/Sai_Baba_of_Shirdi_portrait.jpg" 
-            alt="Sai Baba" 
-            className="w-full h-full object-cover relative z-10"
-          />
+          <div className="w-full h-full flex items-center justify-center bg-primary-fixed/10 relative z-10">
+            <Sparkles size={64} className="text-primary" />
+          </div>
         </div>
 
         <div className="space-y-6 max-w-xs mx-auto text-sm text-on-surface-variant leading-relaxed">
