@@ -1556,17 +1556,17 @@ export default function App() {
       { 
         title: "Daily Sai Guidance", 
         desc: "Receive personalized wisdom and teachings from Sai Baba every morning to start your day with peace.",
-        img: "https://picsum.photos/seed/spiritual-sunrise/800/600"
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Sai_Baba_of_Shirdi_portrait.jpg/640px-Sai_Baba_of_Shirdi_portrait.jpg"
       },
       { 
         title: "Ask Sai AI", 
         desc: "Your spiritual companion. Seek guidance, find comfort, and explore Sai's teachings through reverent AI conversation.",
-        img: "https://picsum.photos/seed/temple-lamp/800/600"
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Sai_baba_statue.jpg/640px-Sai_baba_statue.jpg"
       },
       { 
         title: "Plan Your Devotion", 
         desc: "Organize your Satcharitra Parayan and plan your sacred pilgrimage to Shirdi with ease.",
-        img: "https://picsum.photos/seed/shirdi-temple/800/600"
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Shri_Sai_Baba_Temple%2C_Shirdi.jpg/640px-Shri_Sai_Baba_Temple%2C_Shirdi.jpg"
       }
     ];
 
@@ -1615,8 +1615,13 @@ export default function App() {
           animate={{ opacity: 1, scale: 1 }}
           className="w-full max-w-md bg-white/40 backdrop-blur-xl p-10 rounded-3xl border border-white/20 shadow-2xl flex flex-col items-center text-center"
         >
-          <div className="w-20 h-20 bg-primary-fixed/30 rounded-full flex items-center justify-center mb-8 text-primary">
-            <Sparkles size={40} />
+          <div className="w-32 h-32 rounded-full overflow-hidden mb-8 border-4 border-primary-fixed/30 shadow-2xl">
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Sai_Baba_of_Shirdi_portrait.jpg/640px-Sai_Baba_of_Shirdi_portrait.jpg" 
+              alt="Sai Baba" 
+              className="w-full h-full object-cover"
+              crossOrigin="anonymous"
+            />
           </div>
           <div className="space-y-4 mb-12">
             <h2 className="text-3xl font-headline font-bold tracking-tight">Step into the Sacred Presence</h2>
