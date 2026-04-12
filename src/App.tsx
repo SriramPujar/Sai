@@ -14,6 +14,7 @@ import { Mood, ChatMessage, Aarti, SevaSuggestion, Temple, SaiAnswer, JournalEnt
 import { AARTIS, SEVA_SUGGESTIONS, TEMPLES, SAI_TEACHINGS } from './data';
 import { askSai, getMoodGuidance, getDailyGuidance, interpretSaiAnswer } from './services/geminiService';
 import { getSaiAnswer } from './data/saiAnswers';
+import { SaiBabaPortrait, SaiBabaStatue, ShirdiTemple } from './components/SaiBabaImages';
 
 // --- Sub-components for Screens ---
 
@@ -1550,27 +1551,24 @@ export default function App() {
   }, [activeTab, isBackground]);
 
   if (onboardingStep < 3) {
-    const saiBabaPortrait = "https://commons.wikimedia.org/wiki/Special:FilePath/Sai_Baba_of_Shirdi_portrait.jpg?width=600";
-    const saiBabaStatue = "https://commons.wikimedia.org/wiki/Special:FilePath/Sai_baba_statue.jpg?width=600";
-    const shirdiTemple = "https://commons.wikimedia.org/wiki/Special:FilePath/Shri_Sai_Baba_Temple,_Shirdi.jpg?width=600";
+    const stepImages = [SaiBabaPortrait, SaiBabaStatue, ShirdiTemple];
     
     const steps = [
       { 
         title: "Daily Sai Guidance", 
-        desc: "Receive personalized wisdom and teachings from Sai Baba every morning to start your day with peace.",
-        img: saiBabaPortrait
+        desc: "Receive personalized wisdom and teachings from Sai Baba every morning to start your day with peace."
       },
       { 
         title: "Ask Sai AI", 
-        desc: "Your spiritual companion. Seek guidance, find comfort, and explore Sai's teachings through reverent AI conversation.",
-        img: saiBabaStatue
+        desc: "Your spiritual companion. Seek guidance, find comfort, and explore Sai's teachings through reverent AI conversation."
       },
       { 
         title: "Plan Your Devotion", 
-        desc: "Organize your Satcharitra Parayan and plan your sacred pilgrimage to Shirdi with ease.",
-        img: shirdiTemple
+        desc: "Organize your Satcharitra Parayan and plan your sacred pilgrimage to Shirdi with ease."
       }
     ];
+
+    const CurrentImage = stepImages[onboardingStep];
 
     return (
       <div className="min-h-screen bg-background flex flex-col">
@@ -1582,8 +1580,8 @@ export default function App() {
             exit={{ opacity: 0, x: -50 }}
             className="space-y-12"
           >
-            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
-              <img src={steps[onboardingStep].img} alt="Onboarding" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl bg-surface-container-low">
+              <CurrentImage className="w-full h-full" />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
             </div>
             <div className="space-y-6">
@@ -1618,11 +1616,7 @@ export default function App() {
           className="w-full max-w-md bg-white/40 backdrop-blur-xl p-10 rounded-3xl border border-white/20 shadow-2xl flex flex-col items-center text-center"
         >
           <div className="w-32 h-32 rounded-full overflow-hidden mb-8 border-4 border-primary-fixed/30 shadow-2xl">
-            <img 
-              src="https://commons.wikimedia.org/wiki/Special:FilePath/Sai_Baba_of_Shirdi_portrait.jpg?width=300" 
-              alt="Sai Baba" 
-              className="w-full h-full object-cover object-top"
-            />
+            <SaiBabaPortrait className="w-full h-full" />
           </div>
           <div className="space-y-4 mb-12">
             <h2 className="text-3xl font-headline font-bold tracking-tight">Step into the Sacred Presence</h2>
