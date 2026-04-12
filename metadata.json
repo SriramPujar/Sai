@@ -1,0 +1,5 @@
+{
+  "name": "Sai Seva AI",
+  "description": "A premium, modern, AI-powered devotional companion for Sai Baba devotees.",
+  "requestFramePermissions": ["geolocation"]
+}
