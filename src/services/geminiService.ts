@@ -1,7 +1,7 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { Groq } from "groq-sdk";
 import { ChatMessage, Mood, SaiAnswer } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const SYSTEM_INSTRUCTION = `
 You are Sai Seva AI, a spiritual companion for devotees of Shri Shirdi Sai Baba.
@@ -29,44 +29,46 @@ RESPONSE STRUCTURE for Emotional Comfort:
 - One chapter recommendation.
 - One tiny seva suggestion.
 - "Today's next step".
+
+You MUST respond in valid JSON format with the following schema:
+{
+  "content": "The main compassionate answer",
+  "teaching": "Relevant Sai teaching",
+  "action": "Practical action for today",
+  "chapter": "Suggested chapter (optional)",
+  "mantra": "Suggested mantra (optional)"
+}
+
+IMPORTANT: Only output valid JSON, nothing else.
 `;
 
 export async function askSai(query: string, history: ChatMessage[] = []): Promise<ChatMessage> {
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: [
-        ...history.map(m => ({ role: m.role, parts: [{ text: m.content }] })),
-        { role: "user", parts: [{ text: query }] }
-      ],
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            content: { type: Type.STRING, description: "The main compassionate answer" },
-            teaching: { type: Type.STRING, description: "Relevant Sai teaching" },
-            action: { type: Type.STRING, description: "Practical action for today" },
-            chapter: { type: Type.STRING, description: "Suggested chapter" },
-            mantra: { type: Type.STRING, description: "Suggested mantra" }
-          },
-          required: ["content", "teaching", "action"]
-        }
-      }
+    const messages: ({ role: "system"; content: string } | { role: "user" | "assistant"; content: string })[] = [
+      { role: "system", content: SYSTEM_INSTRUCTION },
+      ...history.map(m => ({ role: m.role === "model" ? "assistant" as const : "user" as const, content: m.content })),
+      { role: "user", content: query }
+    ];
+
+    const chat = await client.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages,
+      temperature: 0.7,
+      response_format: { type: "json_object" },
+      max_tokens: 1000
     });
 
-    const result = JSON.parse(response.text || "{}");
+    const result = JSON.parse(chat.choices[0]?.message?.content || "{}");
     return {
       role: "model",
-      content: result.content,
-      teaching: result.teaching,
-      action: result.action,
+      content: result.content || "I am here with you. Try again.",
+      teaching: result.teaching || "Why fear when I am here?",
+      action: result.action || "",
       chapter: result.chapter,
       mantra: result.mantra
     };
   } catch (error) {
-    console.error("Error calling Gemini:", error);
+    console.error("Error calling Groq:", error);
     return {
       role: "model",
       content: "I am having trouble connecting right now. Please remember: Shraddha and Saburi. Try again in a moment.",
@@ -76,37 +78,39 @@ export async function askSai(query: string, history: ChatMessage[] = []): Promis
 }
 
 export async function getMoodGuidance(mood: Mood): Promise<ChatMessage> {
-  const prompt = `The user is feeling ${mood}. Provide spiritual comfort and guidance.`;
+  const prompt = `The user is feeling ${mood}. Provide spiritual comfort and guidance in JSON format with keys: content, teaching, action, chapter, mantra.`;
   return askSai(prompt);
 }
 
 export async function getDailyGuidance(): Promise<ChatMessage> {
-  const prompt = "Provide a personalized morning guidance for a Sai devotee to start their day with peace.";
+  const prompt = "Provide a personalized morning guidance for a Sai devotee to start their day with peace. JSON format: content, teaching, action, chapter, mantra.";
   return askSai(prompt);
 }
 
 export async function interpretSaiAnswer(answer: SaiAnswer, userContext: string): Promise<string> {
   try {
     const prompt = `
-      The user received this spiritual guidance from the 1-720 Sai Baba Answers system:
-      Title: ${answer.title}
-      Message: ${answer.main_message}
-      
-      The user's specific context/question is: "${userContext}"
-      
-      Provide a short (2-3 sentences), compassionate, and spiritually grounded reflection on how this specific guidance applies to their situation. 
-      Maintain a humble, devotional tone. Do not change the original meaning of the guidance.
+The user received this spiritual guidance from the 1-720 Sai Baba Answers system:
+Title: ${answer.title}
+Message: ${answer.main_message}
+
+The user's specific context/question is: "${userContext}"
+
+Provide a short (2-3 sentences), compassionate, and spiritually grounded reflection on how this specific guidance applies to their situation. 
+Maintain a humble, devotional tone. Do not change the original meaning of the guidance.
     `;
-    
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
-        systemInstruction: "You are Sai Seva AI, a humble spiritual companion. Provide brief, compassionate reflections on Sai Baba's teachings.",
-      }
+
+    const chat = await client.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        { role: "system", content: "You are Sai Seva AI, a humble spiritual companion. Provide brief, compassionate reflections on Sai Baba's teachings." },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.7,
+      max_tokens: 500
     });
 
-    return response.text || "";
+    return chat.choices[0]?.message?.content || "";
   } catch (error) {
     console.error("Error interpreting Sai answer:", error);
     return "";
