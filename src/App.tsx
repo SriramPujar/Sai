@@ -1190,12 +1190,12 @@ const TemplesScreen = () => {
             title="Temple Location Map"
           ></iframe>
         ) : (
-          <img 
-            src="https://picsum.photos/seed/map-placeholder/800/400"
-            alt="Map Placeholder" 
-            className="w-full h-full object-cover opacity-50 grayscale" 
-            referrerPolicy="no-referrer"
-          />
+          <div className="w-full h-full flex items-center justify-center bg-surface-container-highest">
+            <div className="text-center space-y-4">
+              <MapPin size={64} className="mx-auto text-on-surface-variant/30" />
+              <p className="text-sm text-on-surface-variant/40">Tap to find temples near you</p>
+            </div>
+          </div>
         )}
         {!location && (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -1421,8 +1421,8 @@ const ProfileScreen = () => {
   return (
     <div className="space-y-8 pb-12">
       <div className="flex flex-col items-center text-center space-y-4">
-        <div className="w-24 h-24 rounded-full bg-primary-fixed p-1 border-4 border-white shadow-xl">
-          <img src="https://picsum.photos/seed/user-avatar/200/200" alt="Profile" className="w-full h-full object-cover rounded-full" />
+        <div className="w-24 h-24 rounded-full bg-primary-fixed p-1 border-4 border-white shadow-xl flex items-center justify-center">
+          <User size={48} className="text-white" />
         </div>
         <div>
           <h2 className="text-2xl font-headline font-bold">Sai Devotee</h2>
@@ -1653,8 +1653,8 @@ export default function App() {
       {/* Top Bar */}
       <header className="fixed top-0 w-full z-50 glass-header px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary-fixed overflow-hidden border-2 border-white shadow-sm">
-            <img src="https://picsum.photos/seed/user-avatar/100/100" alt="Profile" className="w-full h-full object-cover" />
+          <div className="w-10 h-10 rounded-full bg-primary-fixed border-2 border-white shadow-sm flex items-center justify-center">
+            <User size={20} className="text-white" />
           </div>
           <h1 className="font-headline font-bold text-primary text-lg">Om Sai Ram</h1>
         </div>
