@@ -14,7 +14,6 @@ import { Mood, ChatMessage, Aarti, SevaSuggestion, Temple, SaiAnswer, JournalEnt
 import { AARTIS, SEVA_SUGGESTIONS, TEMPLES, SAI_TEACHINGS } from './data';
 import { askSai, getMoodGuidance, getDailyGuidance, interpretSaiAnswer } from './services/geminiService';
 import { getSaiAnswer } from './data/saiAnswers';
-import { SaiBabaPortrait, SaiBabaStatue, ShirdiTemple } from './components/SaiBabaImages';
 
 // --- Sub-components for Screens ---
 
@@ -1551,24 +1550,25 @@ export default function App() {
   }, [activeTab, isBackground]);
 
   if (onboardingStep < 3) {
-    const stepImages = [SaiBabaPortrait, SaiBabaStatue, ShirdiTemple];
-    
     const steps = [
       { 
         title: "Daily Sai Guidance", 
-        desc: "Receive personalized wisdom and teachings from Sai Baba every morning to start your day with peace."
+        desc: "Receive personalized wisdom and teachings from Sai Baba every morning to start your day with peace.",
+        icon: Sparkles
       },
       { 
         title: "Ask Sai AI", 
-        desc: "Your spiritual companion. Seek guidance, find comfort, and explore Sai's teachings through reverent AI conversation."
+        desc: "Your spiritual companion. Seek guidance, find comfort, and explore Sai's teachings through reverent AI conversation.",
+        icon: MessageSquare
       },
       { 
         title: "Plan Your Devotion", 
-        desc: "Organize your Satcharitra Parayan and plan your sacred pilgrimage to Shirdi with ease."
+        desc: "Organize your Satcharitra Parayan and plan your sacred pilgrimage to Shirdi with ease.",
+        icon: BookOpen
       }
     ];
 
-    const CurrentImage = stepImages[onboardingStep];
+    const Icon = steps[onboardingStep].icon;
 
     return (
       <div className="min-h-screen bg-background flex flex-col">
@@ -1580,9 +1580,14 @@ export default function App() {
             exit={{ opacity: 0, x: -50 }}
             className="space-y-12"
           >
-            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl bg-surface-container-low">
-              <CurrentImage className="w-full h-full" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+            <div className="w-64 h-64 mx-auto rounded-full bg-primary-fixed/20 flex items-center justify-center shadow-2xl">
+              <motion.div
+                animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+                transition={{ repeat: Infinity, duration: 4 }}
+                className="w-48 h-48 rounded-full bg-primary-fixed/30 flex items-center justify-center"
+              >
+                <Icon size={80} className="text-primary" />
+              </motion.div>
             </div>
             <div className="space-y-6">
               <div className="flex gap-2">
@@ -1615,8 +1620,8 @@ export default function App() {
           animate={{ opacity: 1, scale: 1 }}
           className="w-full max-w-md bg-white/40 backdrop-blur-xl p-10 rounded-3xl border border-white/20 shadow-2xl flex flex-col items-center text-center"
         >
-          <div className="w-32 h-32 rounded-full overflow-hidden mb-8 border-4 border-primary-fixed/30 shadow-2xl">
-            <SaiBabaPortrait className="w-full h-full" />
+          <div className="w-32 h-32 rounded-full bg-primary-fixed/20 flex items-center justify-center mb-8 border-4 border-primary-fixed/30 shadow-2xl">
+            <Sparkles size={48} className="text-primary" />
           </div>
           <div className="space-y-4 mb-12">
             <h2 className="text-3xl font-headline font-bold tracking-tight">Step into the Sacred Presence</h2>
