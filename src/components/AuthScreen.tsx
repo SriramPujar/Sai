@@ -29,18 +29,19 @@ const AuthScreen = ({ onComplete }: { onComplete: () => void }) => {
     if (step === 'phone' && !recaptchaRef.current) {
       loadRecaptcha();
     }
-    
+  }, [step]);
+
+  useEffect(() => {
+    // Only clear recaptcha when AuthScreen fully unmounts
     return () => {
-      if (step === 'phone' && recaptchaRef.current) {
-        // clear RecaptchaVerifier to avoid stale DOM references
+      if (recaptchaRef.current) {
         try {
           recaptchaRef.current.clear();
         } catch (e) {}
         recaptchaRef.current = null;
-        setRecaptchaVerifier(null);
       }
     };
-  }, [step]);
+  }, []);
 
   const loadRecaptcha = async () => {
     try {
