@@ -681,44 +681,11 @@ const AartiScreen = ({
   setIsBackground: (b: boolean) => void;
 }) => {
   const [activeAarti, setActiveAarti] = useState(AARTIS[0]);
-  const [activeSectionId, setActiveSectionId] = useState(AARTIS[0].sections[0].id);
-  const [mode, setMode] = useState<'lyrics' | 'translit' | 'trans' | 'video'>('lyrics');
   const [toast, setToast] = useState({ visible: false, message: '' });
-  const lyricsRef = useRef<HTMLDivElement>(null);
-
-  const activeSection = activeAarti.sections.find(s => s.id === activeSectionId) || activeAarti.sections[0];
-
-  useEffect(() => {
-    setActiveSectionId(activeAarti.sections[0].id);
-  }, [activeAarti]);
 
   const showToast = (message: string) => {
     setToast({ visible: true, message });
     setTimeout(() => setToast({ visible: false, message: '' }), 3000);
-  };
-
-  const handleShare = async () => {
-    const content = mode === 'lyrics' ? activeSection.lyrics : mode === 'translit' ? activeSection.transliteration : activeSection.translation;
-    const shareText = `${activeAarti.name} - ${activeSection.title}\n\n${content}\n\nShared via Sai Seva AI`;
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${activeAarti.name} - ${activeSection.title}`,
-          text: shareText,
-          url: window.location.href
-        });
-      } catch (err) {
-        console.error('Error sharing:', err);
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(shareText);
-        showToast('Lyrics copied to clipboard!');
-      } catch (err) {
-        console.error('Error copying:', err);
-      }
-    }
   };
 
   const isCurrentAartiActive = currentAudio?.id === activeAarti.id;
@@ -732,59 +699,11 @@ const AartiScreen = ({
     }
   };
 
-  // Find current line for sync across all sections
-  const currentSyncLine = activeAarti.sections.flatMap(s => s.syncData || []).find((line, index, all) => {
-    const nextLine = all[index + 1];
-    return currentTime >= line.time && (!nextLine || currentTime < nextLine.time);
-  });
-
-  // Auto-switch section based on audio time
-  useEffect(() => {
-    if (isCurrentAartiActive && currentSyncLine) {
-      const sectionWithLine = activeAarti.sections.find(s => s.syncData?.some(l => l.time === currentSyncLine.time));
-      if (sectionWithLine && sectionWithLine.id !== activeSectionId) {
-        setActiveSectionId(sectionWithLine.id);
-      }
-    }
-  }, [currentTime, isCurrentAartiActive]);
-
-  const currentLineIndex = activeSection.syncData?.findIndex(l => l.time === currentSyncLine?.time) ?? -1;
-
-  useEffect(() => {
-    if (currentLineIndex !== -1 && lyricsRef.current) {
-      const activeLine = lyricsRef.current.children[currentLineIndex] as HTMLElement;
-      if (activeLine) {
-        activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-  }, [currentLineIndex, activeSectionId]);
-
   return (
     <div className="space-y-8 pb-40">
       <div className="flex justify-between items-end">
-        <h2 className="text-2xl font-headline font-bold">Aarti & Prayer Hub</h2>
-        <div className="flex gap-2 items-center">
-          <button 
-            onClick={handleShare}
-            className="p-2 bg-surface-container-high rounded-full text-primary hover:bg-primary-fixed/20 transition-all"
-          >
-            <Share2 size={18} />
-          </button>
-          <div className="flex gap-1 bg-surface-container-high p-1 rounded-full text-[10px] font-bold uppercase">
-            {(['lyrics', 'translit', 'trans', 'video'] as const).map(m => (
-              <button 
-                key={m}
-                onClick={() => setMode(m)}
-                className={cn(
-                  "px-3 py-1 rounded-full transition-all",
-                  mode === m ? "bg-white shadow-sm" : "text-on-surface-variant/40"
-                )}
-              >
-                {m === 'lyrics' ? 'Lyrics' : m === 'translit' ? 'Translit' : m === 'trans' ? 'Trans' : 'Video'}
-              </button>
-            ))}
-          </div>
-        </div>
+        <h2 className="text-2xl font-headline font-bold">Aarti</h2>
+        <span className="text-xs font-bold text-on-surface-variant/40 uppercase">{activeAarti.time}</span>
       </div>
 
       <Toast visible={toast.visible} message={toast.message} onClose={() => setToast({ ...toast, visible: false })} />
@@ -795,7 +714,7 @@ const AartiScreen = ({
             key={a.id}
             onClick={() => setActiveAarti(a)}
             className={cn(
-              "flex-shrink-0 px-6 py-2 rounded-full font-bold transition-all",
+              "flex-shrink-0 px-6 py-3 rounded-xl font-bold transition-all",
               activeAarti.id === a.id ? "bg-primary text-white" : "bg-surface-container-low text-on-surface-variant"
             )}
           >
@@ -804,76 +723,19 @@ const AartiScreen = ({
         ))}
       </div>
 
-      {/* Section Tabs */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar">
-        {activeAarti.sections.map(s => (
-          <button 
-            key={s.id}
-            onClick={() => setActiveSectionId(s.id)}
-            className={cn(
-              "flex-shrink-0 px-4 py-1.5 rounded-xl text-xs font-bold transition-all border",
-              activeSectionId === s.id 
-                ? "bg-secondary/10 border-secondary text-secondary" 
-                : "border-outline-variant text-on-surface-variant/60"
-            )}
-          >
-            {s.title}
-          </button>
-        ))}
-      </div>
-
-      {mode === 'video' ? (
-        <Card className="overflow-hidden p-0 bg-black">
-          <div className="aspect-video w-full">
-            <iframe 
-              width="100%" 
-              height="100%" 
-              src={`https://www.youtube.com/embed/${activeAarti.videoId}?autoplay=1`} 
-              title={activeAarti.name} 
-              frameBorder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowFullScreen
-            ></iframe>
+      <Card className="min-h-[300px] flex flex-col items-center justify-center py-16 px-6">
+        <div className="text-center mb-8">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+            <Wind size={48} className={cn(isPlaying && isCurrentAartiActive ? "animate-pulse text-primary" : "text-primary/40")} />
           </div>
-        </Card>
-      ) : (
-        <Card className="min-h-[400px] flex flex-col items-center py-12 px-6">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-headline font-bold text-secondary">{activeAarti.name}</h3>
-            <p className="text-sm font-bold text-primary mt-1">{activeSection.title}</p>
-          </div>
-          
-          {mode === 'lyrics' && activeSection.syncData ? (
-            <div ref={lyricsRef} className="space-y-6 w-full">
-              {activeSection.syncData.map((line, i) => (
-                <motion.p
-                  key={i}
-                  animate={{ 
-                    opacity: isCurrentAartiActive && currentLineIndex === i ? 1 : 0.4,
-                    scale: isCurrentAartiActive && currentLineIndex === i ? 1.1 : 1,
-                    color: isCurrentAartiActive && currentLineIndex === i ? 'var(--primary)' : 'var(--on-surface-variant)'
-                  }}
-                  className={cn(
-                    "text-lg leading-loose font-medium text-center transition-all cursor-pointer hover:opacity-100",
-                    isCurrentAartiActive && currentLineIndex === i ? "font-bold" : ""
-                  )}
-                  onClick={() => isCurrentAartiActive && seek(line.time)}
-                >
-                  {line.text}
-                </motion.p>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-6 text-lg leading-loose text-on-surface-variant font-medium whitespace-pre-line text-center">
-              {mode === 'lyrics' ? activeSection.lyrics : mode === 'translit' ? activeSection.transliteration : activeSection.translation}
-            </div>
-          )}
-        </Card>
-      )}
+          <h3 className="text-3xl font-headline font-bold text-primary">{activeAarti.name.split(' ')[0]}</h3>
+          <p className="text-sm font-bold text-on-surface-variant/60 mt-2">{activeAarti.name.replace(/^[^\s]+ /, '')}</p>
+        </div>
+      </Card>
 
       {/* Playback Controls Overlay */}
-      {mode !== 'video' && activeAarti.audioUrl && (
-        <div className="fixed bottom-28 left-6 right-6 bg-background/80 backdrop-blur-xl border border-primary/10 rounded-3xl p-6 shadow-2xl z-40">
+      {activeAarti.audioUrl && (
+        <div className="fixed bottom-28 left-6 right-6 bg-background/95 backdrop-blur-xl border border-primary/10 rounded-3xl p-6 shadow-2xl z-40">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -895,16 +757,13 @@ const AartiScreen = ({
                 >
                   <Repeat size={12} /> {isBackground ? 'BG ON' : 'BG OFF'}
                 </button>
-                <button className="p-2 text-on-surface-variant/60 hover:text-primary transition-all">
-                  <Repeat size={18} />
-                </button>
               </div>
             </div>
 
             {/* Progress Bar */}
             <div className="space-y-1">
               <div 
-                className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden cursor-pointer relative"
+                className="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden cursor-pointer relative"
                 onClick={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const x = e.clientX - rect.left;
@@ -930,9 +789,9 @@ const AartiScreen = ({
               </button>
               <button 
                 onClick={handlePlayAarti}
-                className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 active:scale-90 transition-all"
+                className="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/30 active:scale-90 transition-all"
               >
-                {isPlaying && isCurrentAartiActive ? <Pause size={28} fill="currentColor" /> : <Play size={28} fill="currentColor" className="ml-1" />}
+                {isPlaying && isCurrentAartiActive ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
               </button>
               <button className="text-on-surface-variant/60 hover:text-primary transition-all">
                 <SkipForward size={24} />
@@ -952,62 +811,59 @@ const formatTime = (seconds: number) => {
 };
 
 const PARAYAN_CHAPTERS = [
-  { id: 1, title: 'Chapter 1', url: 'https://shirdibooks.com/sai-satcharitra-chapter-1/' },
-  { id: 2, title: 'Chapter 2', url: 'https://shirdibooks.com/sai-satcharitra-chapter-2/' },
-  { id: 3, title: 'Chapter 3', url: 'https://shirdibooks.com/sai-satcharitra-chapter-3/' },
-  { id: 4, title: 'Chapter 4', url: 'https://shirdibooks.com/sai-satcharitra-chapter-4/' },
-  { id: 5, title: 'Chapter 5', url: 'https://shirdibooks.com/sai-satcharitra-chapter-5/' },
-  { id: 6, title: 'Chapter 6', url: 'https://shirdibooks.com/sai-satcharitra-chapter-6/' },
-  { id: 7, title: 'Chapter 7', url: 'https://shirdibooks.com/sai-satcharitra-chapter-7/' },
-  { id: 8, title: 'Chapter 8', url: 'https://shirdibooks.com/sai-satcharitra-chapter-8/' },
-  { id: 9, title: 'Chapter 9', url: 'https://shirdibooks.com/sai-satcharitra-chapter-9/' },
-  { id: 10, title: 'Chapter 10', url: 'https://shirdibooks.com/sai-satcharitra-chapter-10/' },
-  { id: 11, title: 'Chapter 11', url: 'https://shirdibooks.com/sai-satcharitra-chapter-11/' },
-  { id: 12, title: 'Chapter 12', url: 'https://shirdibooks.com/sai-satcharitra-chapter-12/' },
-  { id: 13, title: 'Chapter 13', url: 'https://shirdibooks.com/sai-satcharitra-chapter-13/' },
-  { id: 14, title: 'Chapter 14', url: 'https://shirdibooks.com/sai-satcharitra-chapter-14/' },
-  { id: 15, title: 'Chapter 15', url: 'https://shirdibooks.com/sai-satcharitra-chapter-15/' },
-  { id: 16, title: 'Chapter 16 & 17', url: 'https://shirdibooks.com/sai-satcharitra-chapter-16-and-17/' },
-  { id: 17, title: 'Chapter 18 & 19', url: 'https://shirdibooks.com/sai-satcharitra-chapter-18-and-19/' },
-  { id: 18, title: 'Chapter 20', url: 'https://shirdibooks.com/sai-satcharitra-chapter-20/' },
-  { id: 19, title: 'Chapter 21', url: 'https://shirdibooks.com/sai-satcharitra-chapter-21/' },
-  { id: 20, title: 'Chapter 22', url: 'https://shirdibooks.com/sai-satcharitra-chapter-22/' },
-  { id: 21, title: 'Chapter 23', url: 'https://shirdibooks.com/sai-satcharitra-chapter-23/' },
-  { id: 22, title: 'Chapter 24', url: 'https://shirdibooks.com/sai-satcharitra-chapter-24/' },
-  { id: 23, title: 'Chapter 25', url: 'https://shirdibooks.com/sai-satcharitra-chapter-25/' },
-  { id: 24, title: 'Chapter 26', url: 'https://shirdibooks.com/sai-satcharitra-chapter-26/' },
-  { id: 25, title: 'Chapter 27', url: 'https://shirdibooks.com/sai-satcharitra-chapter-27/' },
-  { id: 26, title: 'Chapter 28', url: 'https://shirdibooks.com/sai-satcharitra-chapter-28/' },
-  { id: 27, title: 'Chapter 29', url: 'https://shirdibooks.com/sai-satcharitra-chapter-29/' },
-  { id: 28, title: 'Chapter 30', url: 'https://shirdibooks.com/sai-satcharitra-chapter-30/' },
-  { id: 29, title: 'Chapter 31', url: 'https://shirdibooks.com/sai-satcharitra-chapter-31/' },
-  { id: 30, title: 'Chapter 32', url: 'https://shirdibooks.com/sai-satcharitra-chapter-32/' },
-  { id: 31, title: 'Chapter 33', url: 'https://shirdibooks.com/sai-satcharitra-chapter-33/' },
-  { id: 32, title: 'Chapter 34', url: 'https://shirdibooks.com/sai-satcharitra-chapter-34/' },
-  { id: 33, title: 'Chapter 35', url: 'https://shirdibooks.com/sai-satcharitra-chapter-35/' },
-  { id: 34, title: 'Chapter 36', url: 'https://shirdibooks.com/sai-satcharitra-chapter-36/' },
-  { id: 35, title: 'Chapter 37', url: 'https://shirdibooks.com/sai-satcharitra-chapter-37/' },
-  { id: 36, title: 'Chapter 38', url: 'https://shirdibooks.com/sai-satcharitra-chapter-38/' },
-  { id: 37, title: 'Chapter 39', url: 'https://shirdibooks.com/sai-satcharitra-chapter-39/' },
-  { id: 38, title: 'Chapter 40', url: 'https://shirdibooks.com/sai-satcharitra-chapter-40/' },
-  { id: 39, title: 'Chapter 41', url: 'https://shirdibooks.com/sai-satcharitra-chapter-41/' },
-  { id: 40, title: 'Chapter 42', url: 'https://shirdibooks.com/sai-satcharitra-chapter-42/' },
-  { id: 41, title: 'Chapter 43 & 44', url: 'https://shirdibooks.com/sai-satcharitra-chapter-43-and-44/' },
-  { id: 42, title: 'Chapter 45', url: 'https://shirdibooks.com/sai-satcharitra-chapter-45/' },
-  { id: 43, title: 'Chapter 46', url: 'https://shirdibooks.com/sai-satcharitra-chapter-46/' },
-  { id: 44, title: 'Chapter 47', url: 'https://shirdibooks.com/sai-satcharitra-chapter-47/' },
-  { id: 45, title: 'Chapter 48', url: 'https://shirdibooks.com/sai-satcharitra-chapter-48/' },
-  { id: 46, title: 'Chapter 49', url: 'https://shirdibooks.com/sai-satcharitra-chapter-49/' },
-  { id: 47, title: 'Chapter 50', url: 'https://shirdibooks.com/sai-satcharitra-chapter-50/' },
-  { id: 48, title: 'Chapter 51 (Epilogue & Arati)', url: 'https://shirdibooks.com/chapter-51-epilogue/' },
+  { id: 1, title: 'Chapter 1', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter1.pdf' },
+  { id: 2, title: 'Chapter 2', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter2.pdf' },
+  { id: 3, title: 'Chapter 3', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter3.pdf' },
+  { id: 4, title: 'Chapter 4', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter4.pdf' },
+  { id: 5, title: 'Chapter 5', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter5.pdf' },
+  { id: 6, title: 'Chapter 6', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter6.pdf' },
+  { id: 7, title: 'Chapter 7', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter7.pdf' },
+  { id: 8, title: 'Chapter 8', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter8.pdf' },
+  { id: 9, title: 'Chapter 9', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter9.pdf' },
+  { id: 10, title: 'Chapter 10', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter10.pdf' },
+  { id: 11, title: 'Chapter 11', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter11.pdf' },
+  { id: 12, title: 'Chapter 12', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter12.pdf' },
+  { id: 13, title: 'Chapter 13', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter13.pdf' },
+  { id: 14, title: 'Chapter 14', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter14.pdf' },
+  { id: 15, title: 'Chapter 15', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter15.pdf' },
+  { id: 16, title: 'Chapter 16 & 17', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter16_17.pdf' },
+  { id: 17, title: 'Chapter 18 & 19', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter18_19.pdf' },
+  { id: 18, title: 'Chapter 20', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter20.pdf' },
+  { id: 19, title: 'Chapter 21', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter21.pdf' },
+  { id: 20, title: 'Chapter 22', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter22.pdf' },
+  { id: 21, title: 'Chapter 23', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter23.pdf' },
+  { id: 22, title: 'Chapter 24', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter24.pdf' },
+  { id: 23, title: 'Chapter 25', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter25.pdf' },
+  { id: 24, title: 'Chapter 26', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter26.pdf' },
+  { id: 25, title: 'Chapter 27', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter27.pdf' },
+  { id: 26, title: 'Chapter 28', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter28.pdf' },
+  { id: 27, title: 'Chapter 29', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter29.pdf' },
+  { id: 28, title: 'Chapter 30', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter30.pdf' },
+  { id: 29, title: 'Chapter 31', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter31.pdf' },
+  { id: 30, title: 'Chapter 32', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter32.pdf' },
+  { id: 31, title: 'Chapter 33', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter33.pdf' },
+  { id: 32, title: 'Chapter 34', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter34.pdf' },
+  { id: 33, title: 'Chapter 35', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter35.pdf' },
+  { id: 34, title: 'Chapter 36', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter36.pdf' },
+  { id: 35, title: 'Chapter 37', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter37.pdf' },
+  { id: 36, title: 'Chapter 38', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter38.pdf' },
+  { id: 37, title: 'Chapter 39', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter39.pdf' },
+  { id: 38, title: 'Chapter 40', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter40.pdf' },
+  { id: 39, title: 'Chapter 41', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter41.pdf' },
+  { id: 40, title: 'Chapter 42', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter42.pdf' },
+  { id: 41, title: 'Chapter 43 & 44', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter43_44.pdf' },
+  { id: 42, title: 'Chapter 45', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter45.pdf' },
+  { id: 43, title: 'Chapter 46', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter46.pdf' },
+  { id: 44, title: 'Chapter 47', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter47.pdf' },
+  { id: 45, title: 'Chapter 48', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter48.pdf' },
+  { id: 46, title: 'Chapter 49', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter49.pdf' },
+  { id: 47, title: 'Chapter 50', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/satcharitra_chapter50.pdf' },
+  { id: 48, title: 'Epilogue & Aarti', url: '/docs/sai_satcharitra_pdf/Shri_Sai Satchritra in PDF/Sai Satchritra - Epilogue.pdf' },
 ];
 
 const ParayanScreen = () => {
-  const [step, setStep] = useState(0);
-  const [goal, setGoal] = useState('');
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
   const [completedChapters, setCompletedChapters] = useState<number[]>([]);
-  const [isReading, setIsReading] = useState(false);
 
   if (selectedChapter !== null) {
     const chapter = PARAYAN_CHAPTERS.find(c => c.id === selectedChapter);
@@ -1025,23 +881,21 @@ const ParayanScreen = () => {
         </div>
 
         <Card className="bg-surface-container-lowest border border-primary-fixed/20 p-8 space-y-6">
-          <h3 className="text-2xl font-headline font-bold text-center text-primary">{chapter?.title}</h3>
-          <div className="space-y-4 text-sm text-on-surface-variant leading-relaxed font-medium">
-            <p>
-              Let us bow down to Shri Ganesh, to whom the Lord of the Universe (Shiva) pays His respects. He is the remover of all obstacles and the giver of success.
-            </p>
-            <p>
-              Then, let us bow down to Goddess Saraswati, the Goddess of Learning, who inspires us to sing the glory of the Lord.
-            </p>
-            <p>
-              Next, we bow down to the Family Deity (Kuladevata) and the local Deity (Grama Devata), who protect us always.
-            </p>
-            <p>
-              Finally, we bow down to our Sadguru, Shri Sainath, who is the embodiment of all Gods and who leads us on the path of self-realization.
-            </p>
-            <div className="p-4 bg-primary-fixed/10 rounded-xl italic text-center text-primary mt-6">
-              "He who reads this Satcharitra with faith and devotion will be freed from the cycle of birth and death."
-            </div>
+          <div className="text-center space-y-4">
+            <BookOpen size={64} className="mx-auto text-primary" />
+            <h3 className="text-2xl font-headline font-bold text-primary">{chapter?.title}</h3>
+            <p className="text-on-surface-variant">Click below to read the chapter</p>
+            <Button 
+              className="w-full py-4 text-lg"
+              onClick={() => {
+                if (chapter?.url) {
+                  window.open(chapter.url, '_blank');
+                }
+              }}
+            >
+              <Sparkles size={20} className="mr-2" />
+              Open PDF
+            </Button>
           </div>
         </Card>
 
@@ -1070,61 +924,26 @@ const ParayanScreen = () => {
         <span className="text-xs font-bold text-on-surface-variant/40 uppercase">{completedChapters.length}/{PARAYAN_CHAPTERS.length} Chapters</span>
       </div>
 
-      {goal ? null : (
-        <div className="space-y-4">
-          <h3 className="text-lg font-headline font-bold">Select Your Intention</h3>
-          <div className="grid grid-cols-2 gap-3">
-            {['Peace & Mental Calm', 'Healing & Health', 'Gratitude', 'Family Wellbeing', 'Career Success', 'Surrender'].map(g => (
-              <button 
-                key={g}
-                onClick={() => setGoal(g)}
-                className={cn(
-                  "p-4 rounded-xl text-center border transition-all",
-                  goal === g ? "bg-primary-fixed/20 border-primary" : "bg-surface-container-low border-outline-variant/20 hover:border-primary/40"
-                )}
-              >
-                <p className="font-bold text-sm">{g}</p>
-              </button>
-            ))}
-          </div>
+      <div className="space-y-2">
+        <h4 className="font-bold text-sm uppercase tracking-widest text-on-surface-variant/60">Sai Satcharitra Chapters</h4>
+        <div className="grid grid-cols-2 gap-2">
+          {PARAYAN_CHAPTERS.map(ch => (
+            <button 
+              key={ch.id}
+              onClick={() => setSelectedChapter(ch.id)}
+              className={cn(
+                "p-3 rounded-lg text-left text-sm transition-all flex items-center justify-between",
+                completedChapters.includes(ch.id) 
+                  ? "bg-primary/20 border-primary text-primary" 
+                  : "bg-surface-container-low border border-outline-variant/20 hover:border-primary/40"
+              )}
+            >
+              <span className="font-medium">{ch.title}</span>
+              {completedChapters.includes(ch.id) && <CheckCircle2 size={16} />}
+            </button>
+          ))}
         </div>
-      )}
-
-      {goal && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="space-y-4"
-        >
-          <Card className="bg-primary text-white p-4">
-            <p className="text-xs font-bold uppercase tracking-widest opacity-60">Intention</p>
-            <p className="font-bold">{goal}</p>
-          </Card>
-
-          <div className="space-y-2">
-            <h4 className="font-bold text-sm uppercase tracking-widest text-on-surface-variant/60">Sai Satcharitra Chapters</h4>
-            <div className="grid grid-cols-2 gap-2">
-              {PARAYAN_CHAPTERS.map(ch => (
-                <button 
-                  key={ch.id}
-                  onClick={() => setSelectedChapter(ch.id)}
-                  className={cn(
-                    "p-3 rounded-lg text-left text-sm transition-all flex items-center justify-between",
-                    completedChapters.includes(ch.id) 
-                      ? "bg-primary/20 border-primary text-primary" 
-                      : "bg-surface-container-low border border-outline-variant/20 hover:border-primary/40"
-                  )}
-                >
-                  <span className="font-medium">{ch.title}</span>
-                  {completedChapters.includes(ch.id) && <CheckCircle2 size={16} />}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <Button variant="ghost" className="w-full" onClick={() => setGoal('')}>Change Intention</Button>
-        </motion.div>
-      )}
+      </div>
     </div>
   );
 };
@@ -1141,7 +960,7 @@ const BHAJANS = [
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/bhavabhaya1.MP3"
   },
   {
-    id: 4,
+    id: 3,
     title: "Bhajana Bina Sukha Shanti Nahi",
     lyrics: `Hari Bhajana Bina Sukha Shanti Nahin
 Hari Naam Bina Ananda Nahin
@@ -1157,7 +976,7 @@ Without Sai's Bhajan there is no peace`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/bhajanabina1.MP3"
   },
   {
-    id: 5,
+    id: 4,
     title: "Bhaje Govindam",
     lyrics: `Bhaje Govindam Bhaje Gopalam
 Bhaje Madhava Sri Krishna Roopam
@@ -1171,7 +990,7 @@ He is Lord Krishna in form`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/bhajegov1.MP3"
   },
   {
-    id: 6,
+    id: 5,
     title: "Chanda Kirana Kula Mandala Rama",
     lyrics: `Chanda Kirana Kula Mandala Ram
 Chandra Shekara Sri Gunanidhi
@@ -1185,7 +1004,7 @@ Chant the name of Lord Rama with devotion`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/chanda1.MP3"
   },
   {
-    id: 7,
+    id: 6,
     title: "Chitta Chora",
     lyrics: `Chitta Chora Yashoda Ke Baal
 Bala Gopala Krishna
@@ -1199,7 +1018,7 @@ Krishna, the holder of the flute`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/chittachora1.MP3"
   },
   {
-    id: 8,
+    id: 7,
     title: "Ganga Jathadhara Gowri Sankara",
     lyrics: `Ganga Jathadhara Gowri Sankara
 Girija Mana Ramana Parvati Ramana
@@ -1213,7 +1032,7 @@ Praise the Lord of Lords`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/gangajatha1.MP3"
   },
   {
-    id: 9,
+    id: 8,
     title: "Govinda Gopala Prabhu Giridhari",
     lyrics: `Govinda Gopala Prabhu Giridhari
 Sri Krishna Chaitanya Prabhu
@@ -1227,7 +1046,7 @@ He lifted the Govardhana mountain`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/govinda1.MP3"
   },
   {
-    id: 10,
+    id: 9,
     title: "Govinda Hare Gopala Hare",
     lyrics: `Govinda Hare Gopala Hare
 Govinda Hare Ram
@@ -1241,7 +1060,7 @@ He is Govinda, the protector of cows`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/govind1.MP3"
   },
   {
-    id: 11,
+    id: 10,
     title: "Govinda Krishna Jai",
     lyrics: `Govinda Krishna Jai Gopala Hari
 Jaya Madhava Murali
@@ -1255,7 +1074,7 @@ The enchanter of Radha`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/govindakrishna.MP3"
   },
   {
-    id: 12,
+    id: 11,
     title: "Hare Rama Hare Rama",
     lyrics: `Hare Rama Hare Rama
 Rama Rama Hare Hare
@@ -1269,7 +1088,7 @@ They are the forms of Lord Sai`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/harerama1.MP3"
   },
   {
-    id: 13,
+    id: 12,
     title: "Hari Hari Hari Hari Smarane Karo",
     lyrics: `Hari Hari Hari Hari Smarane Karo
 Manasa Gaavo Radhe Shyam
@@ -1278,12 +1097,12 @@ Radhe Radhe Bole
 Krishna Murli Dole
 
 Hari Hari Hari Hari Smarane Karo
-RememberHari (Lord Vishnu) with love
+Remember Hari (Lord Vishnu) with love
 Chant Radhe Shyam with devotion`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/harihari1.MP3"
   },
   {
-    id: 14,
+    id: 13,
     title: "He Siva Sankar",
     lyrics: `He Siva Sankara Hara Mahadeva
 Namah Shivaya Shivaya Namah Om
@@ -1297,7 +1116,7 @@ Praise the consort of Parvati`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/heshiva1.MP3"
   },
   {
-    id: 15,
+    id: 14,
     title: "Jaya Vittala Panduranga",
     lyrics: `Jaya Vittala Panduranga Vittala
 Panduranga Vittala
@@ -1311,7 +1130,7 @@ The one who holds the flute`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/jayapanduranga.MP3"
   },
   {
-    id: 16,
+    id: 15,
     title: "Love Is My Form",
     lyrics: `Love Is My Form, Truth Is My Breath
 Satya Dharma Shanti Prema Are My Wealth
@@ -1325,7 +1144,7 @@ Are the pillars of life`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/loveismyform.mp3"
   },
   {
-    id: 17,
+    id: 16,
     title: "Madhava Manohara",
     lyrics: `Madhava Mohana Gopala
 Sri Krishna Chaitanya Prabhu
@@ -1339,7 +1158,7 @@ The holder of the flute in Vrindavan`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/madhava1.MP3"
   },
   {
-    id: 18,
+    id: 17,
     title: "Madhura Madhura Murali Ghana",
     lyrics: `Madhura Madhura Murali Ghana Shyama
 Madhurapuri Nilaye
@@ -1353,7 +1172,7 @@ Playing in the Vrindavan gardens`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/madhura1.MP3"
   },
   {
-    id: 19,
+    id: 18,
     title: "Manasa Bajare Guru Charanam",
     lyrics: `Manasa Bajare Guru Charanam
 Manasa Govinda Govinda
@@ -1367,7 +1186,7 @@ Focus your mind on Sai in your heart`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/manasa1.MP3"
   },
   {
-    id: 20,
+    id: 19,
     title: "Narayana Bhaja",
     lyrics: `Narayana Bhaja Narayana
 Narayana Hari Bolo
@@ -1381,7 +1200,7 @@ He is Lord Vishnu, the protector`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/narayanab1.MP3"
   },
   {
-    id: 21,
+    id: 20,
     title: "Pibare Rama Rasam",
     lyrics: `Pibare Rama Rasam
 Pibare Radha Priya Rasam
@@ -1395,7 +1214,7 @@ Experience divine bliss`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/pibarerama1.MP3"
   },
   {
-    id: 22,
+    id: 21,
     title: "Prema Mudita Manasa Kaho",
     lyrics: `Prema Mudita Manasa Kaho
 Sri Sathya Sai Baba Ki Jai
@@ -1409,7 +1228,7 @@ He is the embodiment of divine love`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/prema1.MP3"
   },
   {
-    id: 23,
+    id: 22,
     title: "Rama Kodanda Rama",
     lyrics: `Rama Kodanda Rama
 Raghunatha Sri Rama
@@ -1423,7 +1242,7 @@ The beloved son of Dasharatha`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/ramakodanda1.MP3"
   },
   {
-    id: 24,
+    id: 23,
     title: "Rama Rama Rama Sita",
     lyrics: `Rama Rama Rama Sita Ram
 Sita Ram Ram Ram
@@ -1437,7 +1256,7 @@ They are inseparable`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/ramarama1.MP3"
   },
   {
-    id: 25,
+    id: 24,
     title: "Sathyam Jnanam Anantham Brahma",
     lyrics: `Sathyam Jnanam Anantham Brahma
 Satya Brahman True Self
@@ -1451,7 +1270,7 @@ Chant the eternal truth`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/sathyamjnanam.MP3"
   },
   {
-    id: 26,
+    id: 25,
     title: "Shaila Girishwara Uma Maheshwara",
     lyrics: `Shaila Girishwara Uma Maheshwara
 Parvati Maheshwara
@@ -1465,7 +1284,7 @@ Consort of Parvati (Uma)`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/shaila1.MP3"
   },
   {
-    id: 27,
+    id: 26,
     title: "Shiva Shiva Shiva",
     lyrics: `Shiva Shiva Shiva Shiva Yanaradha
 Shiva Shiva Shiva Yanaradha
@@ -1479,7 +1298,7 @@ The great destroyer of evil`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/ShivaShivaSHivaShivaYanaradha.mp3"
   },
   {
-    id: 28,
+    id: 27,
     title: "Shivaya Parameshwara",
     lyrics: `Shivaya Parameshvara
 Parameshvara Shankara
@@ -1493,7 +1312,7 @@ The great Lord who fulfills all desires`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/shivayaparam.MP3"
   },
   {
-    id: 29,
+    id: 28,
     title: "Subramanyam Subramanyam",
     lyrics: `Subramanyam Subramanyam
 Sri Shanmukha Subrahmanyam
@@ -1507,7 +1326,7 @@ Son of Shiva and Parvati`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/subra1.MP3"
   },
   {
-    id: 30,
+    id: 29,
     title: "Amba Shankari Parameshwari",
     lyrics: `Amba Shankari Parameshwari
 Shashi Shekara Raja Rajeshwari
@@ -1519,9 +1338,9 @@ Amba Shankari Parameshwari
 Mother of the universe
 The goddess who grants auspiciousness`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/ambashankari1.MP3"
-  },   
+  },
   {
-    id: 31,
+    id: 30,
     title: "Darshan Do Prabhu",
     lyrics: `Darshan Do Prabhu Darshan Do
 Darshan Do Mujhe Sai Bhagwan
@@ -1534,7 +1353,7 @@ Please come in our hearts`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/loveismyform.mp3"
   },
   {
-    id: 32,
+    id: 31,
     title: "Sai Baba Ki Jai",
     lyrics: `Jai Jai Sai Baba Ki Jai
 Baba Ki Jai Bolo
@@ -1550,7 +1369,7 @@ Baba Ko Dil Se Chaaho`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/loveismyform.mp3"
   },
   {
-    id: 33,
+    id: 32,
     title: "Hey Sai Jagannatha",
     lyrics: `Hey Sai Jagannatha Hey Sai
 Jagannatha Hey Sai
@@ -1564,18 +1383,18 @@ Hey Sai Jagannatha`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/loveismyform.mp3"
   },
   {
-    id: 34,
+    id: 33,
     title: "Sathya Dharma Shanti Prema",
     lyrics: `Sathya Dharma Shanti Prema Swaroopa
 Sathya Dharma Shanti Prema Swaroop Ap Hai
-Sathya Dharma Shaanthi Prema Sabko Deejo
+Sathya Dharma Shanti Prema Sabko Deejo
 
 Gurudev Gurudev Gurudev Gurudev
 Sathya Dharma Santi Prema Jeevan Ka Marma Hai`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/loveismyform.mp3"
   },
   {
-    id: 35,
+    id: 34,
     title: "Sai Avatara Yuga Avatara",
     lyrics: `Sai Avatara Yuga Avatara
 Yuga Avatara Tumhi Ho
@@ -1588,7 +1407,7 @@ Sathya Sai Prema Sai`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/loveismyform.mp3"
   },
   {
-    id: 36,
+    id: 35,
     title: "Sai Namame Anandame",
     lyrics: `Sai Namame Anandame
 Adbhuthame Sai Geethame
@@ -1598,7 +1417,7 @@ Sundarame Sai Roopame`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/loveismyform.mp3"
   },
   {
-    id: 37,
+    id: 36,
     title: "Bolo Jai Jai Kar",
     lyrics: `Sai Ram Sai Ram
 Prema Bhagavaan Sathya Sai Bhagavaan
@@ -1610,14 +1429,59 @@ Bolo Jai Jaikaar Sai Baba Ki`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/loveismyform.mp3"
   },
   {
+    id: 37,
+    title: "217 Satya Narayana Govinda Madhava",
+    audioUrl: "/audio/Bhajans/217 Satya Narayana Govinda Madhava.mp3"
+  },
+  {
     id: 38,
-    title: "Sai Hai Jeevan",
-    lyrics: `Sai Hai Jeevan Jeevan Sathya Sai
-Sai Mera Jeevan Sahaara
-
-Therey Bina Sai Sabh Hai Andhera
-Sai Hai Jeevan Jeevan Sathya Sai`,
-    audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/loveismyform.mp3"
+    title: "306 Sai Ram Sai Shyam",
+    audioUrl: "/audio/Bhajans/306 Sai Ram Sai Shyam.mp3"
+  },
+  {
+    id: 39,
+    title: "240 He Shyama Sundara He Sai Sundara",
+    audioUrl: "/audio/Bhajans/240 He Shyama Sundara He Sai Sundara.mp3"
+  },
+  {
+    id: 40,
+    title: "244 Adi Pujya Deva Gajanana",
+    audioUrl: "/audio/Bhajans/244 Adi Pujya Deva Gajanana.mp3"
+  },
+  {
+    id: 41,
+    title: "Chandra Vadana Kamala Nayana",
+    audioUrl: "/audio/Bhajans/Chandra Vadana Kamala Nayana.mp3"
+  },
+  {
+    id: 42,
+    title: "Danava Bhanjana Ram Sai",
+    audioUrl: "/audio/Bhajans/Danava Bhanjana Ram Sai.mp3"
+  },
+  {
+    id: 43,
+    title: "Bhola Nath Hare Jagadeesha",
+    audioUrl: "/audio/Bhajans/Bhola Nath Hare Jagadeesha.mp3"
+  },
+  {
+    id: 44,
+    title: "Bhola Bhandari Baba",
+    audioUrl: "/audio/Bhajans/Bhola Bhandari Baba.mp3"
+  },
+  {
+    id: 45,
+    title: "Bhava Nasha Puttaparthi Pureesha",
+    audioUrl: "/audio/Bhajans/Bhava Nasha Puttaparthi Pureesha.mp3"
+  },
+  {
+    id: 46,
+    title: "Bhava Bhaya Harana",
+    audioUrl: "/audio/Bhajans/Bhava Bhaya Harana.mp3"
+  },
+  {
+    id: 47,
+    title: "Bhav Sagar Se Par Utaro",
+    audioUrl: "/audio/Bhajans/Bhav Sagar Se Par Utaro.mp3"
   }
 ];
 
@@ -1625,6 +1489,8 @@ const BhajansScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [playingBhajan, setPlayingBhajan] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
+  const [autoPlayNext, setAutoPlayNext] = useState(true);
+  const [loopCurrent, setLoopCurrent] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const filteredBhajans = BHAJANS.filter(bhajan =>
@@ -1632,6 +1498,39 @@ const BhajansScreen = () => {
   );
 
   const currentBhajan = playingBhajan ? BHAJANS.find(b => b.id === playingBhajan) : null;
+
+  const playBhajan = (bhajanId: number, audioUrl: string) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    audioRef.current = new Audio(audioUrl);
+    audioRef.current.loop = loopCurrent;
+    audioRef.current.play().catch(() => {});
+    setPlayingBhajan(bhajanId);
+    
+    audioRef.current.addEventListener('timeupdate', () => {
+      if (audioRef.current) {
+        const prog = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+        setProgress(prog || 0);
+      }
+    });
+    
+    audioRef.current.addEventListener('ended', () => {
+      if (loopCurrent) {
+        audioRef.current?.play().catch(() => {});
+      } else if (autoPlayNext) {
+        const currentIndex = BHAJANS.findIndex(b => b.id === bhajanId);
+        const nextIndex = (currentIndex + 1) % BHAJANS.length;
+        const nextBhajan = BHAJANS[nextIndex];
+        if (nextBhajan) {
+          playBhajan(nextBhajan.id, nextBhajan.audioUrl);
+        }
+      } else {
+        setPlayingBhajan(null);
+        setProgress(0);
+      }
+    });
+  };
 
   const togglePlay = (bhajanId: number, audioUrl: string) => {
     if (playingBhajan === bhajanId) {
@@ -1642,24 +1541,14 @@ const BhajansScreen = () => {
       setPlayingBhajan(null);
       setProgress(0);
     } else {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-      audioRef.current = new Audio(audioUrl);
-      audioRef.current.play().catch(() => {});
-      setPlayingBhajan(bhajanId);
-      
-      audioRef.current.addEventListener('timeupdate', () => {
-        if (audioRef.current) {
-          const prog = (audioRef.current.currentTime / audioRef.current.duration) * 100;
-          setProgress(prog || 0);
-        }
-      });
-      
-      audioRef.current.addEventListener('ended', () => {
-        setPlayingBhajan(null);
-        setProgress(0);
-      });
+      playBhajan(bhajanId, audioUrl);
+    }
+  };
+
+  const toggleLoop = () => {
+    setLoopCurrent(!loopCurrent);
+    if (audioRef.current) {
+      audioRef.current.loop = !loopCurrent;
     }
   };
 
@@ -1686,16 +1575,35 @@ const BhajansScreen = () => {
               <p className="font-bold text-sm">{currentBhajan.title}</p>
               <p className="text-xs opacity-60">{playingBhajan ? 'Playing...' : 'Paused'}</p>
             </div>
-            <Button 
-              variant="outline" 
-              className="border-white text-white hover:bg-white/20"
-              onClick={stopPlaying}
-            >
-              <Square size={20} />
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                className={cn("border-white text-white hover:bg-white/20", loopCurrent && "bg-white/30")}
+                onClick={toggleLoop}
+                title="Loop"
+              >
+                <Repeat size={18} />
+              </Button>
+              <Button 
+                variant="outline" 
+                className="border-white text-white hover:bg-white/20"
+                onClick={stopPlaying}
+              >
+                <Square size={20} />
+              </Button>
+            </div>
           </div>
           <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
             <div className="h-full bg-white rounded-full transition-all" style={{ width: `${progress}%` }} />
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs opacity-60">Auto-play next:</span>
+            <button 
+              onClick={() => setAutoPlayNext(!autoPlayNext)}
+              className={cn("text-xs px-2 py-0.5 rounded", autoPlayNext ? "bg-white/30" : "bg-white/10")}
+            >
+              {autoPlayNext ? 'ON' : 'OFF'}
+            </button>
           </div>
         </Card>
       )}

@@ -183,7 +183,7 @@ export const AARTIS: Aarti[] = [
       }
     ],
     videoId: '7C_rZ0H4k0k',
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+    audioUrl: '/audio/Kakad_Aarti.mp3'
   },
   {
     id: 'madhyan',
@@ -320,7 +320,7 @@ export const AARTIS: Aarti[] = [
       }
     ],
     videoId: 'W_20wK_7y2Q',
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+    audioUrl: '/audio/Madhyan_Aarti.mp3'
   },
   {
     id: 'dhoop',
@@ -444,7 +444,7 @@ export const AARTIS: Aarti[] = [
       }
     ],
     videoId: 'P_K_h6x_w_Q',
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+    audioUrl: '/audio/Dhoop_Aarti.mp3'
   },
   {
     id: 'shej',
@@ -543,7 +543,7 @@ export const AARTIS: Aarti[] = [
       }
     ],
     videoId: '1_0vK_7y2Q',
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
+    audioUrl: '/audio/Shej_Aarti.mp3'
   }
 ];
 
