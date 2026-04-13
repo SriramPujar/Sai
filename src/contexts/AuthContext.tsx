@@ -10,7 +10,8 @@ import {
   doc,
   setDoc,
   getDoc,
-  updateDoc
+  updateDoc,
+  auth
 } from '../lib/firebase';
 import type { ConfirmationResult, FirebaseUser } from '../lib/firebase';
 import { User, AuthProvider } from '../types';
@@ -64,7 +65,7 @@ export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ child
   const [pendingConfirmation, setPendingConfirmation] = useState<ConfirmationResult | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(async (fbUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       setFirebaseUser(fbUser);
       if (fbUser) {
         try {
