@@ -1,11 +1,10 @@
 import React, { useState, useEffect, ReactNode } from 'react';
 import { 
   onAuthStateChanged, 
-  signInWithPopup, 
-  googleProvider, 
   signInAnonymously, 
   firebaseSignOut, 
-  signInWithPhoneNumber, 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   db,
   doc,
   setDoc,
@@ -13,16 +12,15 @@ import {
   updateDoc,
   auth
 } from '../lib/firebase';
-import type { ConfirmationResult, FirebaseUser } from '../lib/firebase';
+import type { FirebaseUser } from '../lib/firebase';
 import { User, AuthProvider } from '../types';
 
 interface AuthContextType {
   user: User | null;
   firebaseUser: FirebaseUser | null;
   loading: boolean;
-  signInWithGoogle: () => Promise<void>;
-  signInWithPhone: (phone: string, recaptchaVerifier: any) => Promise<ConfirmationResult | null>;
-  verifyOTP: (confirmationResult: ConfirmationResult, otp: string, phoneNumber: string) => Promise<void>;
+  signInWithCredentials: (username: string, pass: string) => Promise<void>;
+  signUpWithCredentials: (username: string, pass: string) => Promise<void>;
   signInAsGuest: () => Promise<void>;
   signOut: () => Promise<void>;
   updateUserStreak: () => Promise<void>;
@@ -67,7 +65,6 @@ export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ child
   const [user, setUser] = useState<User | null>(null);
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [pendingConfirmation, setPendingConfirmation] = useState<ConfirmationResult | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
@@ -92,13 +89,13 @@ export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ child
       if (userDoc.exists()) {
         setUser(userDoc.data() as User);
       } else {
-        const newUser = createInitialUser(fbUser, 'google');
+        const newUser = createInitialUser(fbUser, 'credentials');
         await setDoc(doc(db, 'users', fbUser.uid), newUser);
         setUser(newUser);
       }
     } catch (error) {
       console.error('Error in loadOrCreateUser:', error);
-      const newUser = createInitialUser(fbUser, 'google');
+      const newUser = createInitialUser(fbUser, 'credentials');
       setUser(newUser);
     }
   };
@@ -142,45 +139,30 @@ export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ child
     return updatedUser;
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithCredentials = async (username: string, pass: string) => {
     setLoading(true);
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      const email = `${username.toLowerCase()}@saiseva.app`;
+      const result = await signInWithEmailAndPassword(auth, email, pass);
       await loadOrCreateUser(result.user);
     } catch (error) {
-      console.error('Google sign in error:', error);
+      console.error('Sign in error:', error);
       throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  const signInWithPhone = async (phone: string, recaptchaVerifier: any): Promise<ConfirmationResult | null> => {
+  const signUpWithCredentials = async (username: string, pass: string) => {
     setLoading(true);
     try {
-      const confirmation = await signInWithPhoneNumber(auth, phone, recaptchaVerifier);
-      setPendingConfirmation(confirmation);
-      setLoading(false);
-      return confirmation;
-    } catch (error) {
-      console.error('Phone sign in error:', error);
-      setLoading(false);
-      throw error;
-    }
-  };
-
-  const verifyOTP = async (confirmationResult: ConfirmationResult, otp: string, phoneNumber: string) => {
-    setLoading(true);
-    try {
-      const result = await confirmationResult.confirm(otp);
-      const maskedPhone = phoneNumber.replace(/(\d{3})\s+(\d{3})\s+(\d{4})/, '$1***$3');
-      const newUser = createInitialUser(result.user, 'phone', maskedPhone);
-      newUser.phone = phoneNumber;
+      const email = `${username.toLowerCase()}@saiseva.app`;
+      const result = await createUserWithEmailAndPassword(auth, email, pass);
+      const newUser = createInitialUser(result.user, 'credentials', username);
       await setDoc(doc(db, 'users', result.user.uid), newUser);
       setUser(newUser);
-      setPendingConfirmation(null);
     } catch (error) {
-      console.error('OTP verification error:', error);
+      console.error('Sign up error:', error);
       throw error;
     } finally {
       setLoading(false);
@@ -237,9 +219,8 @@ export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ child
       user, 
       firebaseUser, 
       loading, 
-      signInWithGoogle, 
-      signInWithPhone, 
-      verifyOTP,
+      signInWithCredentials,
+      signUpWithCredentials,
       signInAsGuest, 
       signOut,
       updateUserStreak,

@@ -1,6 +1,6 @@
 export type Mood = 'peaceful' | 'seeking' | 'anxious' | 'grateful' | 'overwhelmed' | 'sad' | 'stressed' | 'confused' | 'in_pain';
 
-export type AuthProvider = 'phone' | 'google' | 'guest';
+export type AuthProvider = 'credentials' | 'guest';
 
 export interface User {
   id: string;

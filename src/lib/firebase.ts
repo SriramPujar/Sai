@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithPhoneNumber, signInAnonymously, onAuthStateChanged, signOut as firebaseSignOut, RecaptchaVerifier } from 'firebase/auth';
+import { getAuth, signInAnonymously, onAuthStateChanged, signOut as firebaseSignOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs, orderBy, limit, Timestamp } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -14,7 +14,5 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const googleProvider = new GoogleAuthProvider();
-
-export { getAuth, signInWithPopup, signInWithPhoneNumber, signInAnonymously, onAuthStateChanged, firebaseSignOut, GoogleAuthProvider, RecaptchaVerifier, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs, orderBy, limit, Timestamp };
+export { getAuth, signInAnonymously, onAuthStateChanged, firebaseSignOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs, orderBy, limit, Timestamp };
 export type { User as FirebaseUser, ConfirmationResult } from 'firebase/auth';
