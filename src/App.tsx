@@ -6,7 +6,7 @@ import {
   Play, Pause, ChevronRight, Search, Filter,
   Clock, Users, CheckCircle2, Info, Share2,
   Mic, Send, Save, ArrowLeft, Volume2, VolumeX,
-  SkipBack, SkipForward, Repeat, Music
+  SkipBack, SkipForward, Repeat, Music, Square
 } from 'lucide-react';
 import { cn } from './lib/utils';
 import { NavItem, Card, Button, Toast } from './components/BaseUI';
@@ -1133,47 +1133,11 @@ const BHAJANS = [
   {
     id: 1,
     title: "Om Sai Ram",
-    lyrics: `Om Sai ram ram
-Om Sai ram ram
-
-Sai Naam Jaisa Na Koi Duniya Mein Naam Hai
-Sai Dhaam Jaisa Na Koi Duniya Mein Dhaam Hai
-Charanon Mein Baith Bada Millega Aaram
-
-Karenge Baaba Sab PURE Tere Kaam
-Om Sai ram ram`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/loveismyform.mp3"
   },
   {
     id: 2,
-    title: "Om Sai Mangalam",
-    lyrics: `Jai Jai Jai Sai Ram
-Jai Jai Jai Sai Ram
-
-Om Sai mangalam Sai Naam mangalam
-Pavan Bhoomi Shirdi Sai Dhaam mangalam
-
-Sadguru Sant Swaroop Sainath mangalam
-Param Pita Ka Roop Dinanath mangalam
-
-Sai Mangalam Sai Naam mangalam`,
-    audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/loveismyform.mp3"
-  },
-  {
-    id: 3,
     title: "Bhava Bhaya Harana",
-    lyrics: `Bhava Bhaya Harana Vanditha Charana
-Jaya Radha Jaya Madhava Sai
-
-Mangala Charana Kalimala Dahana
-Narayana Keshava
-
-Bhava Bhaya Harana Vanditha Charana
-Jaya Radha Jaya Madhava Sai
-
-Victory to Thee, O Lord Sai Madhava!
-The touch of Thy adorable Lotus Feet destroys bondage
-And burns the impurities of this Kali age.`,
     audioUrl: "https://www.sathyasai.org/audio/audioprashanthi/bhavabhaya1.MP3"
   },
   {
@@ -1658,15 +1622,16 @@ Sai Hai Jeevan Jeevan Sathya Sai`,
 ];
 
 const BhajansScreen = () => {
-  const [selectedBhajan, setSelectedBhajan] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [playingBhajan, setPlayingBhajan] = useState<number | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const filteredBhajans = BHAJANS.filter(bhajan =>
     bhajan.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const currentBhajan = playingBhajan ? BHAJANS.find(b => b.id === playingBhajan) : null;
 
   const togglePlay = (bhajanId: number, audioUrl: string) => {
     if (playingBhajan === bhajanId) {
@@ -1675,90 +1640,63 @@ const BhajansScreen = () => {
         audioRef.current = null;
       }
       setPlayingBhajan(null);
-      setIsPlaying(false);
+      setProgress(0);
     } else {
       if (audioRef.current) {
         audioRef.current.pause();
       }
       audioRef.current = new Audio(audioUrl);
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch(() => {
-        alert("Unable to play audio. Please try again.");
-      });
+      audioRef.current.play().catch(() => {});
       setPlayingBhajan(bhajanId);
+      
+      audioRef.current.addEventListener('timeupdate', () => {
+        if (audioRef.current) {
+          const prog = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+          setProgress(prog || 0);
+        }
+      });
+      
+      audioRef.current.addEventListener('ended', () => {
+        setPlayingBhajan(null);
+        setProgress(0);
+      });
     }
   };
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio) {
-      audio.addEventListener('ended', () => {
-        setPlayingBhajan(null);
-        setIsPlaying(false);
-      });
+  const stopPlaying = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
     }
-    return () => {
-      if (audio) {
-        audio.pause();
-        audio.src = '';
-      }
-    };
-  }, []);
-
-  if (selectedBhajan !== null) {
-    const bhajan = BHAJANS.find(b => b.id === selectedBhajan);
-    return (
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-6"
-      >
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" className="px-0 flex items-center gap-2" onClick={() => setSelectedBhajan(null)}>
-            <ArrowLeft size={16} /> Back to Bhajans
-          </Button>
-        </div>
-
-        <Card className="bg-surface-container-lowest border border-primary-fixed/20 p-6 space-y-4">
-          <h3 className="text-xl font-headline font-bold text-center text-primary">{bhajan?.title}</h3>
-          <div className="space-y-3 text-sm text-on-surface-variant leading-relaxed font-medium whitespace-pre-line">
-            {bhajan?.lyrics}
-          </div>
-        </Card>
-
-        <Button 
-          className="w-full py-4" 
-          onClick={() => bhajan && togglePlay(bhajan.id, bhajan.audioUrl)}
-        >
-          {playingBhajan === bhajan?.id ? "Stop" : "Play Bhajan"}
-        </Button>
-      </motion.div>
-    );
-  }
+    setPlayingBhajan(null);
+    setProgress(0);
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <h2 className="text-2xl font-headline font-bold">Bhajans</h2>
       
-      {playingBhajan !== null && (
-        <Card className="bg-primary text-white p-4 flex items-center justify-between">
+      {currentBhajan && (
+        <Card className="bg-primary text-white p-4 space-y-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-              <Music size={20} />
+            <div className={cn("w-12 h-12 rounded-full flex items-center justify-center", playingBhajan ? "bg-white/30 animate-pulse" : "bg-white/20")}>
+              <Music size={24} />
             </div>
-            <div>
-              <p className="font-bold text-sm">Now Playing</p>
-              <p className="text-xs opacity-60"> {BHAJANS.find(b => b.id === playingBhajan)?.title}</p>
+            <div className="flex-1">
+              <p className="font-bold text-sm">{currentBhajan.title}</p>
+              <p className="text-xs opacity-60">{playingBhajan ? 'Playing...' : 'Paused'}</p>
             </div>
+            <Button 
+              variant="outline" 
+              className="border-white text-white hover:bg-white/20"
+              onClick={stopPlaying}
+            >
+              <Square size={20} />
+            </Button>
           </div>
-          <Button 
-            variant="outline" 
-            className="border-white text-white hover:bg-white/20"
-            onClick={() => playingBhajan && togglePlay(playingBhajan, BHAJANS.find(b => b.id === playingBhajan)?.audioUrl || '')}
-          >
-            Stop
-          </Button>
+          <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+            <div className="h-full bg-white rounded-full transition-all" style={{ width: `${progress}%` }} />
+          </div>
         </Card>
       )}
       
@@ -1777,18 +1715,36 @@ const BhajansScreen = () => {
         {filteredBhajans.map(bhajan => (
           <button 
             key={bhajan.id}
-            onClick={() => setSelectedBhajan(bhajan.id)}
-            className="p-4 rounded-xl bg-surface-container-low border border-outline-variant/20 hover:border-primary/40 text-left transition-all"
+            onClick={() => togglePlay(bhajan.id, bhajan.audioUrl)}
+            className={cn(
+              "p-4 rounded-xl border text-left transition-all flex items-center gap-3",
+              playingBhajan === bhajan.id 
+                ? "bg-primary-fixed/20 border-primary" 
+                : "bg-surface-container-low border-outline-variant/20 hover:border-primary/40"
+            )}
           >
-            <p className="font-bold text-sm">{bhajan.title}</p>
-            <p className="text-xs text-on-surface-variant/60 mt-1 flex items-center gap-2">
-              <Music size={12} /> Tap to view lyrics
-            </p>
+            <div className={cn(
+              "w-10 h-10 rounded-full flex items-center justify-center",
+              playingBhajan === bhajan.id ? "bg-primary text-white" : "bg-surface-container-high text-primary"
+            )}>
+              {playingBhajan === bhajan.id ? <Volume2 size={18} /> : <Music size={18} />}
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-sm">{bhajan.title}</p>
+              <p className="text-xs text-on-surface-variant/60">Tap to play</p>
+            </div>
+            {playingBhajan === bhajan.id && (
+              <div className="flex gap-1">
+                <span className="w-1 h-3 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-1 h-4 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-1 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            )}
           </button>
         ))}
       </div>
 
-      {filteredBhajans.length === 0 && (
+{filteredBhajans.length === 0 && (
         <p className="text-center text-on-surface-variant/60 py-8">No bhajans found</p>
       )}
     </div>
