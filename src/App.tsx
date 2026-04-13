@@ -6,7 +6,7 @@ import {
   Play, Pause, ChevronRight, Search, Filter,
   Clock, Users, CheckCircle2, Info, Share2,
   Mic, Send, Save, ArrowLeft, Volume2, VolumeX,
-  SkipBack, SkipForward, Repeat
+  SkipBack, SkipForward, Repeat, Music
 } from 'lucide-react';
 import { cn } from './lib/utils';
 import { NavItem, Card, Button, Toast } from './components/BaseUI';
@@ -164,6 +164,7 @@ const HomeScreen = ({ onNavigate }: { onNavigate: (s: string) => void }) => {
         {[
           { id: 'ask-sai', label: 'Ask Sai', sub: 'Divine Guidance', icon: MessageSquare, color: 'bg-primary-container/10', iconColor: 'text-primary' },
           { id: 'parayan', label: 'Parayan', sub: 'Reading Plan', icon: BookOpen, color: 'bg-secondary-container/10', iconColor: 'text-secondary' },
+          { id: 'bhajans', label: 'Bhajans', sub: 'Devotional Songs', icon: Music, color: 'bg-tertiary-container/10', iconColor: 'text-tertiary' },
           { id: 'aarti', label: 'Aarti', sub: 'Live & Recorded', icon: Wind, color: 'bg-tertiary-container/10', iconColor: 'text-tertiary' },
           { id: 'temples', label: 'Temples', sub: 'Find Nearby', icon: MapPin, color: 'bg-secondary-container/10', iconColor: 'text-secondary' },
         ].map((item) => (
@@ -950,12 +951,66 @@ const formatTime = (seconds: number) => {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
+const PARAYAN_CHAPTERS = [
+  { id: 1, title: 'Chapter 1', url: 'https://shirdibooks.com/sai-satcharitra-chapter-1/' },
+  { id: 2, title: 'Chapter 2', url: 'https://shirdibooks.com/sai-satcharitra-chapter-2/' },
+  { id: 3, title: 'Chapter 3', url: 'https://shirdibooks.com/sai-satcharitra-chapter-3/' },
+  { id: 4, title: 'Chapter 4', url: 'https://shirdibooks.com/sai-satcharitra-chapter-4/' },
+  { id: 5, title: 'Chapter 5', url: 'https://shirdibooks.com/sai-satcharitra-chapter-5/' },
+  { id: 6, title: 'Chapter 6', url: 'https://shirdibooks.com/sai-satcharitra-chapter-6/' },
+  { id: 7, title: 'Chapter 7', url: 'https://shirdibooks.com/sai-satcharitra-chapter-7/' },
+  { id: 8, title: 'Chapter 8', url: 'https://shirdibooks.com/sai-satcharitra-chapter-8/' },
+  { id: 9, title: 'Chapter 9', url: 'https://shirdibooks.com/sai-satcharitra-chapter-9/' },
+  { id: 10, title: 'Chapter 10', url: 'https://shirdibooks.com/sai-satcharitra-chapter-10/' },
+  { id: 11, title: 'Chapter 11', url: 'https://shirdibooks.com/sai-satcharitra-chapter-11/' },
+  { id: 12, title: 'Chapter 12', url: 'https://shirdibooks.com/sai-satcharitra-chapter-12/' },
+  { id: 13, title: 'Chapter 13', url: 'https://shirdibooks.com/sai-satcharitra-chapter-13/' },
+  { id: 14, title: 'Chapter 14', url: 'https://shirdibooks.com/sai-satcharitra-chapter-14/' },
+  { id: 15, title: 'Chapter 15', url: 'https://shirdibooks.com/sai-satcharitra-chapter-15/' },
+  { id: 16, title: 'Chapter 16 & 17', url: 'https://shirdibooks.com/sai-satcharitra-chapter-16-and-17/' },
+  { id: 17, title: 'Chapter 18 & 19', url: 'https://shirdibooks.com/sai-satcharitra-chapter-18-and-19/' },
+  { id: 18, title: 'Chapter 20', url: 'https://shirdibooks.com/sai-satcharitra-chapter-20/' },
+  { id: 19, title: 'Chapter 21', url: 'https://shirdibooks.com/sai-satcharitra-chapter-21/' },
+  { id: 20, title: 'Chapter 22', url: 'https://shirdibooks.com/sai-satcharitra-chapter-22/' },
+  { id: 21, title: 'Chapter 23', url: 'https://shirdibooks.com/sai-satcharitra-chapter-23/' },
+  { id: 22, title: 'Chapter 24', url: 'https://shirdibooks.com/sai-satcharitra-chapter-24/' },
+  { id: 23, title: 'Chapter 25', url: 'https://shirdibooks.com/sai-satcharitra-chapter-25/' },
+  { id: 24, title: 'Chapter 26', url: 'https://shirdibooks.com/sai-satcharitra-chapter-26/' },
+  { id: 25, title: 'Chapter 27', url: 'https://shirdibooks.com/sai-satcharitra-chapter-27/' },
+  { id: 26, title: 'Chapter 28', url: 'https://shirdibooks.com/sai-satcharitra-chapter-28/' },
+  { id: 27, title: 'Chapter 29', url: 'https://shirdibooks.com/sai-satcharitra-chapter-29/' },
+  { id: 28, title: 'Chapter 30', url: 'https://shirdibooks.com/sai-satcharitra-chapter-30/' },
+  { id: 29, title: 'Chapter 31', url: 'https://shirdibooks.com/sai-satcharitra-chapter-31/' },
+  { id: 30, title: 'Chapter 32', url: 'https://shirdibooks.com/sai-satcharitra-chapter-32/' },
+  { id: 31, title: 'Chapter 33', url: 'https://shirdibooks.com/sai-satcharitra-chapter-33/' },
+  { id: 32, title: 'Chapter 34', url: 'https://shirdibooks.com/sai-satcharitra-chapter-34/' },
+  { id: 33, title: 'Chapter 35', url: 'https://shirdibooks.com/sai-satcharitra-chapter-35/' },
+  { id: 34, title: 'Chapter 36', url: 'https://shirdibooks.com/sai-satcharitra-chapter-36/' },
+  { id: 35, title: 'Chapter 37', url: 'https://shirdibooks.com/sai-satcharitra-chapter-37/' },
+  { id: 36, title: 'Chapter 38', url: 'https://shirdibooks.com/sai-satcharitra-chapter-38/' },
+  { id: 37, title: 'Chapter 39', url: 'https://shirdibooks.com/sai-satcharitra-chapter-39/' },
+  { id: 38, title: 'Chapter 40', url: 'https://shirdibooks.com/sai-satcharitra-chapter-40/' },
+  { id: 39, title: 'Chapter 41', url: 'https://shirdibooks.com/sai-satcharitra-chapter-41/' },
+  { id: 40, title: 'Chapter 42', url: 'https://shirdibooks.com/sai-satcharitra-chapter-42/' },
+  { id: 41, title: 'Chapter 43 & 44', url: 'https://shirdibooks.com/sai-satcharitra-chapter-43-and-44/' },
+  { id: 42, title: 'Chapter 45', url: 'https://shirdibooks.com/sai-satcharitra-chapter-45/' },
+  { id: 43, title: 'Chapter 46', url: 'https://shirdibooks.com/sai-satcharitra-chapter-46/' },
+  { id: 44, title: 'Chapter 47', url: 'https://shirdibooks.com/sai-satcharitra-chapter-47/' },
+  { id: 45, title: 'Chapter 48', url: 'https://shirdibooks.com/sai-satcharitra-chapter-48/' },
+  { id: 46, title: 'Chapter 49', url: 'https://shirdibooks.com/sai-satcharitra-chapter-49/' },
+  { id: 47, title: 'Chapter 50', url: 'https://shirdibooks.com/sai-satcharitra-chapter-50/' },
+  { id: 48, title: 'Chapter 51 (Epilogue & Arati)', url: 'https://shirdibooks.com/chapter-51-epilogue/' },
+];
+
 const ParayanScreen = () => {
   const [step, setStep] = useState(0);
   const [goal, setGoal] = useState('');
+  const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [completedChapters, setCompletedChapters] = useState<number[]>([]);
   const [isReading, setIsReading] = useState(false);
 
-  if (isReading) {
+  if (selectedChapter !== null) {
+    const chapter = PARAYAN_CHAPTERS.find(c => c.id === selectedChapter);
     return (
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -963,14 +1018,14 @@ const ParayanScreen = () => {
         className="space-y-6"
       >
         <div className="flex items-center justify-between">
-          <Button variant="ghost" className="px-0 flex items-center gap-2" onClick={() => setIsReading(false)}>
-            <ArrowLeft size={16} /> Back to Plan
+          <Button variant="ghost" className="px-0 flex items-center gap-2" onClick={() => setSelectedChapter(null)}>
+            <ArrowLeft size={16} /> Back to Chapters
           </Button>
-          <span className="text-xs font-bold text-primary bg-primary-fixed/20 px-3 py-1 rounded-full">Chapter 1</span>
+          <span className="text-xs font-bold text-primary bg-primary-fixed/20 px-3 py-1 rounded-full">{chapter?.title}</span>
         </div>
 
         <Card className="bg-surface-container-lowest border border-primary-fixed/20 p-8 space-y-6">
-          <h3 className="text-2xl font-headline font-bold text-center text-primary">Obeisances to Shri Ganesh</h3>
+          <h3 className="text-2xl font-headline font-bold text-center text-primary">{chapter?.title}</h3>
           <div className="space-y-4 text-sm text-on-surface-variant leading-relaxed font-medium">
             <p>
               Let us bow down to Shri Ganesh, to whom the Lord of the Universe (Shiva) pays His respects. He is the remover of all obstacles and the giver of success.
@@ -990,28 +1045,20 @@ const ParayanScreen = () => {
           </div>
         </Card>
 
-        <Button className="w-full py-4 text-lg" onClick={() => { setIsReading(false); setStep(3); }}>
-          Complete Today's Reading
-        </Button>
-      </motion.div>
-    );
-  }
-
-  if (step === 3) {
-    return (
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="space-y-8 text-center py-12"
-      >
-        <div className="w-24 h-24 bg-primary-fixed/20 rounded-full flex items-center justify-center mx-auto text-primary">
-          <CheckCircle2 size={48} />
+        <div className="flex gap-3">
+          <Button 
+            variant={completedChapters.includes(selectedChapter) ? "outline" : "default"}
+            className="flex-1 py-4" 
+            onClick={() => {
+              if (!completedChapters.includes(selectedChapter)) {
+                setCompletedChapters([...completedChapters, selectedChapter]);
+              }
+              setSelectedChapter(null);
+            }}
+          >
+            {completedChapters.includes(selectedChapter) ? 'Completed ✓' : 'Mark as Complete'}
+          </Button>
         </div>
-        <div className="space-y-2">
-          <h2 className="text-2xl font-headline font-bold">Reading Completed!</h2>
-          <p className="text-sm text-on-surface-variant/60">Baba's blessings are with you.</p>
-        </div>
-        <Button className="w-full py-4" onClick={() => setStep(0)}>Return to Dashboard</Button>
       </motion.div>
     );
   }
@@ -1019,20 +1066,20 @@ const ParayanScreen = () => {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-end">
-        <h2 className="text-2xl font-headline font-bold">Parayan Planner</h2>
-        <span className="text-xs font-bold text-on-surface-variant/40 uppercase">Step {step + 1} of 3</span>
+        <h2 className="text-2xl font-headline font-bold">Parayan</h2>
+        <span className="text-xs font-bold text-on-surface-variant/40 uppercase">{completedChapters.length}/{PARAYAN_CHAPTERS.length} Chapters</span>
       </div>
 
-      {step === 0 ? (
-        <div className="space-y-6">
-          <h3 className="text-lg font-headline font-bold">What is your devotional goal?</h3>
-          <div className="grid grid-cols-1 gap-3">
+      {goal ? null : (
+        <div className="space-y-4">
+          <h3 className="text-lg font-headline font-bold">Select Your Intention</h3>
+          <div className="grid grid-cols-2 gap-3">
             {['Peace & Mental Calm', 'Healing & Health', 'Gratitude', 'Family Wellbeing', 'Career Success', 'Surrender'].map(g => (
               <button 
                 key={g}
-                onClick={() => { setGoal(g); setStep(1); }}
+                onClick={() => setGoal(g)}
                 className={cn(
-                  "p-5 rounded-xl text-left border transition-all",
+                  "p-4 rounded-xl text-center border transition-all",
                   goal === g ? "bg-primary-fixed/20 border-primary" : "bg-surface-container-low border-outline-variant/20 hover:border-primary/40"
                 )}
               >
@@ -1041,60 +1088,620 @@ const ParayanScreen = () => {
             ))}
           </div>
         </div>
-      ) : step === 1 ? (
-        <div className="space-y-6">
-          <h3 className="text-lg font-headline font-bold">Choose Duration</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { label: '1 Day', sub: 'Intense' },
-              { label: '7 Days', sub: 'Traditional' },
-              { label: '9 Days', sub: 'Navratri Style' },
-              { label: 'Custom', sub: 'Your Pace' }
-            ].map(d => (
-              <button 
-                key={d.label}
-                onClick={() => setStep(2)}
-                className="p-6 rounded-xl bg-surface-container-low border border-outline-variant/20 hover:border-primary/40 text-center space-y-2 transition-all"
-              >
-                <p className="font-bold text-lg">{d.label}</p>
-                <p className="text-[10px] text-on-surface-variant/60 uppercase font-bold">{d.sub}</p>
-              </button>
-            ))}
-          </div>
-          <Button variant="ghost" className="w-full" onClick={() => setStep(0)}>Back</Button>
-        </div>
-      ) : (
+      )}
+
+      {goal && (
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="space-y-6"
+          className="space-y-4"
         >
-          <Card className="bg-primary text-white space-y-6">
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold uppercase tracking-widest opacity-60">Your Personalized Plan</p>
-              <h3 className="text-2xl font-headline font-bold">7-Day Parayan for {goal}</h3>
-            </div>
-            <div className="space-y-4">
-              <div className="flex justify-between text-sm font-bold">
-                <span>Today's Reading</span>
-                <span>Chapters 1-7</span>
-              </div>
-              <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden">
-                <div className="w-[14%] h-full bg-white rounded-full" />
-              </div>
-            </div>
+          <Card className="bg-primary text-white p-4">
+            <p className="text-xs font-bold uppercase tracking-widest opacity-60">Intention</p>
+            <p className="font-bold">{goal}</p>
           </Card>
-          
-          <div className="space-y-4">
-            <h4 className="font-bold text-sm uppercase tracking-widest text-on-surface-variant/60">Today's Intention</h4>
-            <p className="text-sm italic text-on-surface-variant leading-relaxed">"Today, I read with the intention of finding inner stillness and surrendering my worries at Sai's feet."</p>
+
+          <div className="space-y-2">
+            <h4 className="font-bold text-sm uppercase tracking-widest text-on-surface-variant/60">Sai Satcharitra Chapters</h4>
+            <div className="grid grid-cols-2 gap-2">
+              {PARAYAN_CHAPTERS.map(ch => (
+                <button 
+                  key={ch.id}
+                  onClick={() => setSelectedChapter(ch.id)}
+                  className={cn(
+                    "p-3 rounded-lg text-left text-sm transition-all flex items-center justify-between",
+                    completedChapters.includes(ch.id) 
+                      ? "bg-primary/20 border-primary text-primary" 
+                      : "bg-surface-container-low border border-outline-variant/20 hover:border-primary/40"
+                  )}
+                >
+                  <span className="font-medium">{ch.title}</span>
+                  {completedChapters.includes(ch.id) && <CheckCircle2 size={16} />}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
-            <Button className="w-full py-4" onClick={() => setIsReading(true)}>Start Reading</Button>
-            <Button variant="outline" className="w-full py-4" onClick={() => setStep(0)}>Reset Plan</Button>
-          </div>
+          <Button variant="ghost" className="w-full" onClick={() => setGoal('')}>Change Intention</Button>
         </motion.div>
+      )}
+    </div>
+  );
+};
+
+const BHAJANS = [
+  {
+    id: 1,
+    title: "Om Sai Ram Om Sai Shyam",
+    category: "Sai Baba",
+    lyrics: `Om Sai Ram Om Sai Shyam
+Sadda kashat mitane wale tum
+Roto ko hasane wale tum
+
+Deen dukhi ko jag mein sai
+Gale lagane wale tum
+Shirdi apka paawan dhaam
+
+Om Sai ram ram
+Om sai shyam shyam
+
+Has Kar ungli sadda tum uthate
+Shradha saburi ke mantra batate
+Chote bade sabhi ke baba
+Cchan mein sare Dukh bhagate
+
+Ek maalik ka japte naam
+Om Sai ram ram
+Om sai shyam shyam`
+  },
+  {
+    id: 2,
+    title: "Om Sai Mangalam",
+    category: "Sai Baba",
+    lyrics: `Jai Jai Jai Sai Ram
+Jai Jai Jai Sai Ram
+
+Om sai mangalam sai naam mangalam
+Pavan bhoomi shirdi sai dhaam mangalam
+
+Sadguru sant swaroop sainath mangalam
+Param pita ka roop dinanath mangalam
+
+Patit pavan dhaam shubsthaan mangalam
+Prani prani ka hota hai kalyan mangalam
+
+Sai mangalam sai naam mangalam`
+  },
+  {
+    id: 3,
+    title: "Charana Kamala Bando",
+    category: "Sai Baba",
+    lyrics: `Charana Kamala Bando
+Sai Nath Ke Charana Kamala Bando
+
+Jo Trishavanto Piyo Charanamrutha
+Jeevan Mey Paavey Anando
+
+Surrender To The Feet Of The Lord
+Sai Baba Surrender To The Feet Of The Lord
+
+Surrender To The One We Adore Sai Baba
+And With Devotion We Can Cross This Ocean`
+  },
+  {
+    id: 4,
+    title: "Jaya Jaya Hey Matha No. 1",
+    category: "Sai Baba",
+    lyrics: `Jaya Jaya Hey Matha No. 1
+Maa Sharda Maiya
+Maa Sharda Maiya
+
+Hey Matha No. 1
+Hey Sai Baba Hey
+
+Sharanu Shirdi Wale Ki
+Sharanu Shirdi Wale Ki
+
+Jo Bhi Hari Ka Bhajan Karey
+Woh Hi Brahma Hari Pad Paavey
+
+Sai Nath Jo Bhajana Karey
+Bhava Sagar Se Paar Karey`
+  },
+  {
+    id: 5,
+    title: "Ram Ram Bhajo Mana Harey",
+    category: "Rama",
+    lyrics: `Ram Ram Bhajo Mana Harey
+Ram Ram Bhajo Mana Harey
+
+Sai Ram Bhajo Mana Harey Harey
+
+Raghupathi Raja Rama Ram
+Patitha Pavana Sita Ram
+
+Sai Ram Bhajo Mana Harey Harey
+
+O Mind, worship Lord Rama of the Raghu Dynasty
+The Lord of Sita, Lord Rama
+Destroys sins and evil, uplifts and liberates the penitent
+Chant the name of Lord Sai who is verily Lord Rama`
+  },
+  {
+    id: 6,
+    title: "Bhajorey Manuva Sadguru Deva",
+    category: "Sai Baba",
+    lyrics: `Bhajorey Manuva Sadguru Deva
+Bhajorey Manuva Sadguru Deva
+
+Parama Krupalu Sai Mahadeva
+Bhajorey Manuva Sadguru Deva
+
+Nis Din Dhyan Karoon Mein Tera
+Janam Janam Ka Mitey Andhera
+
+Parabrahma Parameshwara Roopa (Deva)
+Parama Krupalu Sai Mahadeva
+
+Best of all, make our minds focus on Guru Sai
+Our Supreme Great Teacher, Sai Guru Divine`
+  },
+  {
+    id: 7,
+    title: "Govindam Bhaja Mooda Mathey",
+    category: "Krishna",
+    lyrics: `Govindam Bhaja Mooda Mathey
+Govindam Bhaja Mooda Mathey
+
+Samprapte Sannihite Kaale
+Nahi Nahi Rakshati Dukrin Karane
+
+Govindam Bhaja Mooda Mathey
+
+Punarapi Jananam Punarapi Maranam
+Punarapi Janani Jathare Shayanam
+
+O mind pray to Govinda (Krishna), the protector of cows
+O mind, when the time comes, grammar will not help
+Again and again we have to take births in the mother's womb
+So please remember the name of the Lord Govinda`
+  },
+  {
+    id: 8,
+    title: "Sadguru Dev Raaha Dikhao",
+    category: "Sai Baba",
+    lyrics: `Sadguru Dev Raaha Dikhao
+Sadguru Dev Raaha Dikhao Prabhu
+
+Raaha Dikhao Sai Deva
+Sadguru Dev Raaha Dikhao
+
+Tum Ho Merey Prana Daata
+Tum Ho Merey Bhagya Daata
+Sadguru Dev Raaha Dikhao
+
+Sathya Guru Dev Raaha Dikhao Prabhu
+O Lord Sai, our Divine Preceptor
+Show us the path to liberation
+You are our Life Giver and Bestower of all prosperity`
+  },
+  {
+    id: 9,
+    title: "Jo Bhi Hari Ka Bhajan",
+    category: "Sai Baba",
+    lyrics: `Jo Bhi Hari Ka Bhajan Karey
+Woh Hi Brahma Hari Pad Paavey
+
+Sai Nath Jo Bhajana Karey
+Bhava Sagar Se Paar Karey
+
+Those who chant the name of Hari alone
+Reach the position of Brahman
+Those who chant the name of Sai
+Is sure to cross the cycle of birth and death`
+  },
+  {
+    id: 10,
+    title: "Hey Sai Jagannatha",
+    category: "Sai Baba",
+    lyrics: `Hey Sai Jagannatha Hey Sai
+Hey Sai Jagannatha Hey Sai
+
+Jagannatha Hey Sai Jagannatha
+
+Deena Bandhu Sai Natha
+Karuna Sindhu Jagannatha
+Hey Sai Jagannatha
+
+Hey Shirdi Jagannatha
+Hey Parthi Jagannatha
+Hey Sai Jagannatha
+
+O Sai, my Lord of Universe
+Walk beside me everyday, Lord of Compassion
+Satya Sai my Lord of Truth
+Prema Sai my Lord of Love
+O Sai my Lord of Peace`
+  },
+  {
+    id: 11,
+    title: "Sathya Dharma Shanti Prema Swaroopa",
+    category: "Sai Baba",
+    lyrics: `Sathya Dharma Shanti Prema Swaroopa
+Sathya Dharma Shanti Prema Swaroop Ap Hai
+Sathya Dharma Shaanthi Prema Sabko Deejo
+
+Gurudev Gurudev Gurudev Gurudev
+Sathya Dharma Santi Prema
+Jeevan Ka Marma Hai
+Sathya Dharma Shaanthi Prema
+
+O Lord (Sai) give us Truth, Righteousness, Peace and Love
+You are, in fact, the embodiment of these
+These are the pillars of life itself, O Guru!`
+  },
+  {
+    id: 12,
+    title: "Sai Hai Jeevan",
+    category: "Sai Baba",
+    lyrics: `Sai Hai Jeevan, Jeevan Sathya Sai
+Sai Mera Jeevan Sahaara
+
+Therey Bina Sai Sabh Hai Andhera
+Sai Hai Jeevan, Jeevan Sathya Sai
+
+Charana Lagalo Mujhey Sai Kanhaiya
+Paara Karo Merey Jeevana Naiya
+
+Sai Hai Jeevan, Jeevan Sathya Sai
+Sai Mera Jeevan Sahaara
+
+Sai is the essence of life, life itself is Sai
+Sai is the support and sustenance of my life
+Without you, Sai, all is darkness
+Guide the boat of my life across the ocean`
+  },
+  {
+    id: 13,
+    title: "Bolo Jai Jai Kar",
+    category: "Sai Baba",
+    lyrics: `Sai Ram Sai Ram (2X)
+Prema Bhagavaan Sathya Sai Bhagavaan
+Prema Bhagavaan Sai Bhagavaan
+
+Sai Gopala Hey Ghanashyama
+Patheetha Pavana Hey Ghanashyama
+Bolo Jai Jaikaar Sai Baba Ki
+Bolo Jai Jaikaar Bolo Jai Jaikaar
+
+Let us cheer Sai Baba
+O Sai Krishna, Saviour of the fallen
+Embodiment of divine love, Sai Ram
+May You be victorious`
+  },
+  {
+    id: 14,
+    title: "Darshan Do Prabhu",
+    category: "Sai Baba",
+    lyrics: `Darshana Do Prabhu Darshana Do
+Darshana Do Mujhey Sai Bhagwan
+
+Vinati Karoon Mein Bar Bar
+Darshana Do Prabhu Darshana Do
+
+Hrdaya Mey Aao Sai Bhagawan
+Bhajan Mey Aao Sai Bhagawan
+
+Parthipuri Ke Sai Bhagawan
+
+Lord Sai, grant us Your divine vision
+Please come in our hearts
+Please come in our bhajans`
+  },
+  {
+    id: 15,
+    title: "Hari Bhajana Bina",
+    category: "Sai Baba",
+    lyrics: `Hari Bhajana Bina Sukha Shanti Nahin
+Hari Naam Bina Ananda Nahin
+
+Prema Bhakti Bina Uddhar Nahin
+Guru Seva Bina Nirvana Nahin
+
+Japa Dhyana Bina Samyoga Nahin
+Prabhu Darshana Bina Pragnana Nahin
+Daya Dharma Bina Satkarma Nahin
+Bhagawan Bina Koi Apna Nahin
+
+Hari Nama Bina Paramatma Nahin
+Sai Bhajana Bina Sukha Shanti Nahin
+
+Without Hari Bhajan there is no happiness or peace
+Without divine Love there is no liberation
+Without Guru's service there is no Nirvana
+Without Sai's Bhajan there is no peace`
+  },
+  {
+    id: 16,
+    title: "Sai Avatara Yuga Avatara",
+    category: "Sai Baba",
+    lyrics: `Sai Avatara Yuga Avatara
+Yuga Avatara Tumhi Ho
+
+Eshwaramba Priya Tanaya-ta
+Sai Parameshwara
+
+Sab Dharmon Ke Baba Sai
+Sathya Sai Prema Sai
+Sai Avatara Yuga Avatara
+
+Deena Dayala Sankata Hara
+Sai Brahma Sai Vishnu
+Sai Maheshwara
+
+Oh Supreme Lord Sai!
+You are the Incarnation of this Kali Age!
+You are the protector of the meek, the remover of danger
+You are Brahma, Vishnu and Maheshwara
+Chant the name of Lord Sathya Sai!`
+  },
+  {
+    id: 17,
+    title: "Namah Shivaya",
+    category: "Shiva",
+    lyrics: `Namah Shivaya Namah Shivaya (8)
+Hara Hara Hara Hara Mahadeva
+
+Terey Dhyan Mey Khoyen Hum
+Sab Nis Din Tera Bhajan Karoon
+
+Hara Hara Hara Hara Mahadeva
+Tum Hi Badey Dayalu Ho
+Tum Hi Badey Krupalu
+Sathya Sai Hai Naam Tumhara
+
+Namah Shivaya Namah Shivaya
+We bow to Shiva, the great Lord
+We contemplate on You always
+You are the most compassionate
+Sathya Sai is Your name`
+  },
+  {
+    id: 18,
+    title: "Bhajare Rama Charan",
+    category: "Rama",
+    lyrics: `Bhajare Rama Charan
+Sri Rama Sri Rama
+
+Mane Mana Vaasamurai
+Sri Rama Sri Rama
+
+Evo Ksheemai
+Parathipuri Sri Rama
+
+Ram Ram Bhajo Mana Harey
+Sri Rama Sri Rama
+
+Chant the name of Lord Rama
+Meditate on Him in the mind
+He is the Lord of Puttaparthi
+He protects all devotees`
+  },
+  {
+    id: 19,
+    title: "Madhava Mohana",
+    category: "Krishna",
+    lyrics: `Madhava Mohana Gopala
+Sri Krishna Chaitanya Prabhu
+
+Madhava Mohana Muralidhara
+Vrindavana Vilashee
+
+Madhava Mohana Hey Nandalala
+Kaisi Yeh Preet Lagi
+
+Madhava Mohana
+You are the enchanter of the mind
+Krishna, the holder of the flute
+The one who plays in Vrindavan
+The son of Nanda`
+  },
+  {
+    id: 20,
+    title: "Sri Ram Jaya Ram",
+    category: "Rama",
+    lyrics: `Sri Ram Jaya Ram Jaya Jaya Ram
+Janaki Jeevana Ram
+
+Ayodhya Raghunatha Ram
+Dasharatha Nandhana Ram
+
+Sita Rama Radhe Shyam
+Raghupathi Raghava Raja Ram
+
+Glory to Lord Rama
+The life of Janaki (Sita)
+The Lord of Ayodhya
+Son of Dasharatha`
+  },
+  {
+    id: 21,
+    title: "Radhe Govinda",
+    category: "Krishna",
+    lyrics: `Radhe Govinda Gopala
+Jaya Govinda Radhe Gopala
+
+Radhe Shyama Hey Ghana Shyama
+Radha Madhava Radhe Shyama
+
+Giridhari Gopala
+Madhava Govinda
+
+Radhe Govinda Radhe Gopala
+Sairam
+
+Radha and Govinda are united
+Glory to Krishna, the dark-complexioned one
+The holder of the mountain
+The lover of Radha`
+  },
+  {
+    id: 22,
+    title: "Narayana Hari",
+    category: "Narayana",
+    lyrics: `Narayana Hari Nam
+Narayana Hari Nam
+
+Narayana Hari Bolo
+Narayana Hari Nam
+
+Narayana Narayana
+Hari Bolo Hare Ram
+
+We chant the name of Narayana (Lord Vishnu)
+He is the remover of sins
+Chant His name always`
+  },
+  {
+    id: 23,
+    title: "Vittala Vittala",
+    category: "Vittala",
+    lyrics: `Vittala Vittala Hari Vittala
+Panduranga Vitthala
+
+Hey Pandharinatha
+Vrittartti Golla Sree
+
+Vittala Vittala
+Murali Manohara
+
+Viththa (Lord Vittala) is Lord Vishnu
+He is the Lord of Pandharpur
+The one who holds the flute`
+  },
+  {
+    id: 24,
+    title: "Om Namah Shivaya",
+    category: "Shiva",
+    lyrics: `Om Namah Shivaya Shivaya Namah Om
+Om Namah Shivaya
+
+Hara Mahadeva
+Namah Shivaya
+
+Om Namah Shivaya Shivaya Namah Om
+Om Namah Shivaya
+
+We bow to Lord Shiva
+The great destroyer of evil
+The auspicious one`
+  },
+  {
+    id: 25,
+    title: "Ganesha Sharanam",
+    category: "Ganesha",
+    lyrics: `Ganesha Sharanam Parama Pavanam
+Ganesha Sharanam
+
+Vighna Nivara Kara
+Sarva Papa Vidhavera
+
+Lambodara Gajanana
+Gajavadhana Gananatha
+
+We seek refuge in Lord Ganesha
+The remover of obstacles
+The elephant-faced one
+The son of Parvati`
+  }
+];
+
+const BhajansScreen = () => {
+  const [selectedBhajan, setSelectedBhajan] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+
+  const allCategories = BHAJANS.map(b => b.category);
+  const categories = ['All', ...new Set(allCategories)];
+
+  const filteredBhajans = BHAJANS.filter(bhajan => {
+    const matchesSearch = bhajan.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'All' || bhajan.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  if (selectedBhajan !== null) {
+    const bhajan = BHAJANS.find(b => b.id === selectedBhajan);
+    return (
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
+        <div className="flex items-center justify-between">
+          <Button variant="ghost" className="px-0 flex items-center gap-2" onClick={() => setSelectedBhajan(null)}>
+            <ArrowLeft size={16} /> Back to Bhajans
+          </Button>
+        </div>
+
+        <Card className="bg-surface-container-lowest border border-primary-fixed/20 p-6 space-y-4">
+          <h3 className="text-xl font-headline font-bold text-center text-primary">{bhajan?.title}</h3>
+          <p className="text-xs text-center text-primary-fixed/60 uppercase">{bhajan?.category}</p>
+          <div className="space-y-3 text-sm text-on-surface-variant leading-relaxed font-medium whitespace-pre-line">
+            {bhajan?.lyrics}
+          </div>
+        </Card>
+      </motion.div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-headline font-bold">Bhajans</h2>
+      
+      <div className="relative">
+        <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40" />
+        <input
+          type="text"
+          placeholder="Search bhajans..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-10 pr-4 py-3 bg-surface-container-low border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:border-primary"
+        />
+      </div>
+
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={cn(
+              "px-4 py-2 rounded-full text-sm whitespace-nowrap transition-all",
+              selectedCategory === cat 
+                ? "bg-primary text-white" 
+                : "bg-surface-container-low border border-outline-variant/20"
+            )}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 gap-2">
+        {filteredBhajans.map(bhajan => (
+          <button 
+            key={bhajan.id}
+            onClick={() => setSelectedBhajan(bhajan.id)}
+            className="p-4 rounded-xl bg-surface-container-low border border-outline-variant/20 hover:border-primary/40 text-left transition-all"
+          >
+            <p className="font-bold text-sm">{bhajan.title}</p>
+            <p className="text-xs text-primary-fixed/60 mt-1">{bhajan.category}</p>
+          </button>
+        ))}
+      </div>
+
+      {filteredBhajans.length === 0 && (
+        <p className="text-center text-on-surface-variant/60 py-8">No bhajans found</p>
       )}
     </div>
   );
@@ -1686,6 +2293,7 @@ export default function App() {
               />
             )}
             {activeTab === 'parayan' && <ParayanScreen />}
+            {activeTab === 'bhajans' && <BhajansScreen />}
             {activeTab === 'temples' && <TemplesScreen />}
             {activeTab === 'comfort' && <ComfortScreen />}
             {activeTab === 'sai-answers' && <SaiBabaAnswersScreen />}
@@ -1732,6 +2340,7 @@ export default function App() {
         <NavItem icon={Home} label="Home" active={activeTab === 'home'} onClick={() => setActiveTab('home')} />
         <NavItem icon={MessageSquare} label="Ask Sai" active={activeTab === 'ask-sai'} onClick={() => setActiveTab('ask-sai')} />
         <NavItem icon={BookOpen} label="Parayan" active={activeTab === 'parayan'} onClick={() => setActiveTab('parayan')} />
+        <NavItem icon={Music} label="Bhajans" active={activeTab === 'bhajans'} onClick={() => setActiveTab('bhajans')} />
         <NavItem icon={MapPin} label="Temples" active={activeTab === 'temples'} onClick={() => setActiveTab('temples')} />
         <NavItem icon={User} label="Profile" active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
       </nav>
