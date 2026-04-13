@@ -1132,50 +1132,146 @@ const ParayanScreen = () => {
 const BHAJANS = [
   {
     id: 1,
-    title: "Om Sai Ram Om Sai Shyam",
-    category: "Sai Baba",
-    lyrics: `Om Sai Ram Om Sai Shyam
-Sadda kashat mitane wale tum
-Roto ko hasane wale tum
-
-Deen dukhi ko jag mein sai
-Gale lagane wale tum
-Shirdi apka paawan dhaam
-
+    title: "Om Sai Ram",
+    lyrics: `Om Sai ram ram
 Om Sai ram ram
-Om sai shyam shyam
 
-Has Kar ungli sadda tum uthate
-Shradha saburi ke mantra batate
-Chote bade sabhi ke baba
-Cchan mein sare Dukh bhagate
+Sai Naam Jaisa Na Koi Duniya Mein Naam Hai
+Sai Dhaam Jaisa Na Koi Duniya Mein Dhaam Hai
+Charanon Mein Baith Bada Millega Aaram
 
-Ek maalik ka japte naam
+Karenge Baaba Sab PURE Tere Kaam
 Om Sai ram ram
-Om sai shyam shyam`
+
+Saanso Mein Pirole Pyare Sai Ji Ke Naam Ko
+Dil Mein Vasale Pyare Shiradi Ke Dhaam Ko
+Mil Jaayenge Tumhe Ram Shri Shyam
+
+Karenge Baaba Sab PURE Tere Kaam
+Om Sai ram ram`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   },
   {
     id: 2,
     title: "Om Sai Mangalam",
-    category: "Sai Baba",
     lyrics: `Jai Jai Jai Sai Ram
 Jai Jai Jai Sai Ram
 
-Om sai mangalam sai naam mangalam
-Pavan bhoomi shirdi sai dhaam mangalam
+Om Sai mangalam Sai Naam mangalam
+Pavan Bhoomi Shirdi Sai Dhaam mangalam
 
-Sadguru sant swaroop sainath mangalam
-Param pita ka roop dinanath mangalam
+Sadguru Sant Swaroop Sainath mangalam
+Param Pita Ka Roop Dinanath mangalam
 
-Patit pavan dhaam shubsthaan mangalam
-Prani prani ka hota hai kalyan mangalam
+Patit Pavan Dhaam Shubsthaan mangalam
+Prani Prani Ka Hota Hai Kalyan mangalam
 
-Sai mangalam sai naam mangalam`
+Sai Mangalam Sai Naam mangalam`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   },
   {
     id: 3,
+    title: "Sai Ram Sai Shyam",
+    lyrics: `Sai Ram Sai Shyam Sai Bhagwan
+Shirdi Ke Data Sabse Mahan
+
+Karuna Ke Sagar Daya Nidhan
+Shirdi Ke Data Sabse Mahan
+
+Sai Ram Sai Shyam Sai Bhagwan
+Shirdi Ke Data Sabse Mahan
+
+Sai Charan Ki Dhool Ko Maathe Jo Lagaoge
+Punya Charon Dhaam Ka Shirdi Mein Hi Paoge
+Hoga Tumhara Wahin Kalyan
+Shirdi Ke Data Sabse Mahan`,
+    audioUrl: "https://stream.radiosai.net:8000/"
+  },
+  {
+    id: 4,
+    title: "Sai Baba Ki Jai",
+    lyrics: `Jai Jai Sai Baba Ki Jai
+Baba Ki Jai Bolo
+
+Baba Apna Dhan De Raha Hai
+Jo Bhi Maange To
+
+Mere Sarkar Ke Data Sai
+Tere Bina Khaali Haath
+
+Sai Baba Jai Jai
+Sai Baba Ki Jai
+
+Baba Se Darr Nahin
+Baba Ko Dil Se Chaaho
+
+Jo Bhakti Se Pukare
+Wo Paas Pad Jai`,
+    audioUrl: "https://stream.radiosai.net:8000/"
+  },
+  {
+    id: 5,
+    title: "Darshan Do Prabhu",
+    lyrics: `Darshan Do Prabhu Darshan Do
+Darshan Do Mujhe Sai Bhagwan
+
+Vinati Karoon Mein Bar Bar
+Sai Bhagwan Darshan Do
+
+Hrdaya Mein Aao Sai Bhagawan
+Bhajan Mein Aao Sai Bhagawan
+
+Parthipuri Ke Sai Bhagawan
+Darshan Do Prabhu
+
+Lord Sai, grant us Your divine vision
+Please come in our hearts`,
+    audioUrl: "https://stream.radiosai.net:8000/"
+  },
+  {
+    id: 6,
+    title: "Mere Sai Baba",
+    lyrics: `Mere Sai Baba Aao
+Mere Dil Mein Samao
+
+Tum Hi Mera Eunaka
+Tum Hi Mera Sahara
+
+Shirdi Ke Data Sai
+MereDil Ke Rakhwale
+
+Mere Sai Baba Aao
+Mere Liye Jeevan Banao
+
+Mere Sai Baba Ki Jai
+Jeevan Mein Hai Bhai
+
+Tere Bina Andhera Hi
+Tere Saath Safar Hai`,
+    audioUrl: "https://stream.radiosai.net:8000/"
+  },
+  {
+    id: 7,
+    title: "Hey Sai Jagannatha",
+    lyrics: `Hey Sai Jagannatha Hey Sai
+Jagannatha Hey Sai
+
+Deena Bandhu Sai Natha
+Karuna Sindhu Jagannatha
+
+Hey Shirdi Jagannatha
+Hey Parthi Jagannatha
+Hey Sai Jagannatha
+
+O Sai, my Lord of Universe
+Walk beside me everyday, Lord of Compassion
+Satya Sai my Lord of Truth
+Prema Sai my Lord of Love`,
+    audioUrl: "https://stream.radiosai.net:8000/"
+  },
+  {
+    id: 8,
     title: "Charana Kamala Bando",
-    category: "Sai Baba",
     lyrics: `Charana Kamala Bando
 Sai Nath Ke Charana Kamala Bando
 
@@ -1186,147 +1282,12 @@ Surrender To The Feet Of The Lord
 Sai Baba Surrender To The Feet Of The Lord
 
 Surrender To The One We Adore Sai Baba
-And With Devotion We Can Cross This Ocean`
-  },
-  {
-    id: 4,
-    title: "Jaya Jaya Hey Matha No. 1",
-    category: "Sai Baba",
-    lyrics: `Jaya Jaya Hey Matha No. 1
-Maa Sharda Maiya
-Maa Sharda Maiya
-
-Hey Matha No. 1
-Hey Sai Baba Hey
-
-Sharanu Shirdi Wale Ki
-Sharanu Shirdi Wale Ki
-
-Jo Bhi Hari Ka Bhajan Karey
-Woh Hi Brahma Hari Pad Paavey
-
-Sai Nath Jo Bhajana Karey
-Bhava Sagar Se Paar Karey`
-  },
-  {
-    id: 5,
-    title: "Ram Ram Bhajo Mana Harey",
-    category: "Rama",
-    lyrics: `Ram Ram Bhajo Mana Harey
-Ram Ram Bhajo Mana Harey
-
-Sai Ram Bhajo Mana Harey Harey
-
-Raghupathi Raja Rama Ram
-Patitha Pavana Sita Ram
-
-Sai Ram Bhajo Mana Harey Harey
-
-O Mind, worship Lord Rama of the Raghu Dynasty
-The Lord of Sita, Lord Rama
-Destroys sins and evil, uplifts and liberates the penitent
-Chant the name of Lord Sai who is verily Lord Rama`
-  },
-  {
-    id: 6,
-    title: "Bhajorey Manuva Sadguru Deva",
-    category: "Sai Baba",
-    lyrics: `Bhajorey Manuva Sadguru Deva
-Bhajorey Manuva Sadguru Deva
-
-Parama Krupalu Sai Mahadeva
-Bhajorey Manuva Sadguru Deva
-
-Nis Din Dhyan Karoon Mein Tera
-Janam Janam Ka Mitey Andhera
-
-Parabrahma Parameshwara Roopa (Deva)
-Parama Krupalu Sai Mahadeva
-
-Best of all, make our minds focus on Guru Sai
-Our Supreme Great Teacher, Sai Guru Divine`
-  },
-  {
-    id: 7,
-    title: "Govindam Bhaja Mooda Mathey",
-    category: "Krishna",
-    lyrics: `Govindam Bhaja Mooda Mathey
-Govindam Bhaja Mooda Mathey
-
-Samprapte Sannihite Kaale
-Nahi Nahi Rakshati Dukrin Karane
-
-Govindam Bhaja Mooda Mathey
-
-Punarapi Jananam Punarapi Maranam
-Punarapi Janani Jathare Shayanam
-
-O mind pray to Govinda (Krishna), the protector of cows
-O mind, when the time comes, grammar will not help
-Again and again we have to take births in the mother's womb
-So please remember the name of the Lord Govinda`
-  },
-  {
-    id: 8,
-    title: "Sadguru Dev Raaha Dikhao",
-    category: "Sai Baba",
-    lyrics: `Sadguru Dev Raaha Dikhao
-Sadguru Dev Raaha Dikhao Prabhu
-
-Raaha Dikhao Sai Deva
-Sadguru Dev Raaha Dikhao
-
-Tum Ho Merey Prana Daata
-Tum Ho Merey Bhagya Daata
-Sadguru Dev Raaha Dikhao
-
-Sathya Guru Dev Raaha Dikhao Prabhu
-O Lord Sai, our Divine Preceptor
-Show us the path to liberation
-You are our Life Giver and Bestower of all prosperity`
+And With Devotion We Can Cross This Ocean`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   },
   {
     id: 9,
-    title: "Jo Bhi Hari Ka Bhajan",
-    category: "Sai Baba",
-    lyrics: `Jo Bhi Hari Ka Bhajan Karey
-Woh Hi Brahma Hari Pad Paavey
-
-Sai Nath Jo Bhajana Karey
-Bhava Sagar Se Paar Karey
-
-Those who chant the name of Hari alone
-Reach the position of Brahman
-Those who chant the name of Sai
-Is sure to cross the cycle of birth and death`
-  },
-  {
-    id: 10,
-    title: "Hey Sai Jagannatha",
-    category: "Sai Baba",
-    lyrics: `Hey Sai Jagannatha Hey Sai
-Hey Sai Jagannatha Hey Sai
-
-Jagannatha Hey Sai Jagannatha
-
-Deena Bandhu Sai Natha
-Karuna Sindhu Jagannatha
-Hey Sai Jagannatha
-
-Hey Shirdi Jagannatha
-Hey Parthi Jagannatha
-Hey Sai Jagannatha
-
-O Sai, my Lord of Universe
-Walk beside me everyday, Lord of Compassion
-Satya Sai my Lord of Truth
-Prema Sai my Lord of Love
-O Sai my Lord of Peace`
-  },
-  {
-    id: 11,
-    title: "Sathya Dharma Shanti Prema Swaroopa",
-    category: "Sai Baba",
+    title: "Sathya Dharma Shanti Prema",
     lyrics: `Sathya Dharma Shanti Prema Swaroopa
 Sathya Dharma Shanti Prema Swaroop Ap Hai
 Sathya Dharma Shaanthi Prema Sabko Deejo
@@ -1334,38 +1295,35 @@ Sathya Dharma Shaanthi Prema Sabko Deejo
 Gurudev Gurudev Gurudev Gurudev
 Sathya Dharma Santi Prema
 Jeevan Ka Marma Hai
-Sathya Dharma Shaanthi Prema
 
 O Lord (Sai) give us Truth, Righteousness, Peace and Love
 You are, in fact, the embodiment of these
-These are the pillars of life itself, O Guru!`
+These are the pillars of life itself, O Guru!`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   },
   {
-    id: 12,
-    title: "Sai Hai Jeevan",
-    category: "Sai Baba",
-    lyrics: `Sai Hai Jeevan, Jeevan Sathya Sai
-Sai Mera Jeevan Sahaara
+    id: 10,
+    title: "Sai Namame Anandame",
+    lyrics: `Sai Namame Anandame
+Adbhuthame Sai Geethame
 
-Therey Bina Sai Sabh Hai Andhera
-Sai Hai Jeevan, Jeevan Sathya Sai
+Akhandame Jyothirmayame
+Sundarame Sai Roopame
 
-Charana Lagalo Mujhey Sai Kanhaiya
-Paara Karo Merey Jeevana Naiya
+Anandame Anandame
+Sai Namame
 
-Sai Hai Jeevan, Jeevan Sathya Sai
-Sai Mera Jeevan Sahaara
+Sai Ramam Sai Geetham
+Sai Dhyanam Sai Rupam
 
-Sai is the essence of life, life itself is Sai
-Sai is the support and sustenance of my life
-Without you, Sai, all is darkness
-Guide the boat of my life across the ocean`
+Blissful is Sai's name and transcendental are Sai Bhajans
+Eternal is His effulgence and exceedingly beautiful is His form`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   },
   {
-    id: 13,
+    id: 11,
     title: "Bolo Jai Jai Kar",
-    category: "Sai Baba",
-    lyrics: `Sai Ram Sai Ram (2X)
+    lyrics: `Sai Ram Sai Ram
 Prema Bhagavaan Sathya Sai Bhagavaan
 Prema Bhagavaan Sai Bhagavaan
 
@@ -1377,54 +1335,29 @@ Bolo Jai Jaikaar Bolo Jai Jaikaar
 Let us cheer Sai Baba
 O Sai Krishna, Saviour of the fallen
 Embodiment of divine love, Sai Ram
-May You be victorious`
+May You be victorious`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   },
   {
-    id: 14,
-    title: "Darshan Do Prabhu",
-    category: "Sai Baba",
-    lyrics: `Darshana Do Prabhu Darshana Do
-Darshana Do Mujhey Sai Bhagwan
+    id: 12,
+    title: "Sai Hai Jeevan",
+    lyrics: `Sai Hai Jeevan Jeevan Sathya Sai
+Sai Mera Jeevan Sahaara
 
-Vinati Karoon Mein Bar Bar
-Darshana Do Prabhu Darshana Do
+Therey Bina Sai Sabh Hai Andhera
+Sai Hai Jeevan Jeevan Sathya Sai
 
-Hrdaya Mey Aao Sai Bhagawan
-Bhajan Mey Aao Sai Bhagawan
+Charana Lagalo Mujhey Sai Kanhaiya
+Paara Karo Merey Jeevana Naiya
 
-Parthipuri Ke Sai Bhagawan
-
-Lord Sai, grant us Your divine vision
-Please come in our hearts
-Please come in our bhajans`
+Sai is the essence of life, life itself is Sai
+Sai is the support and sustenance of my life
+Without you, Sai, all is darkness`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   },
   {
-    id: 15,
-    title: "Hari Bhajana Bina",
-    category: "Sai Baba",
-    lyrics: `Hari Bhajana Bina Sukha Shanti Nahin
-Hari Naam Bina Ananda Nahin
-
-Prema Bhakti Bina Uddhar Nahin
-Guru Seva Bina Nirvana Nahin
-
-Japa Dhyana Bina Samyoga Nahin
-Prabhu Darshana Bina Pragnana Nahin
-Daya Dharma Bina Satkarma Nahin
-Bhagawan Bina Koi Apna Nahin
-
-Hari Nama Bina Paramatma Nahin
-Sai Bhajana Bina Sukha Shanti Nahin
-
-Without Hari Bhajan there is no happiness or peace
-Without divine Love there is no liberation
-Without Guru's service there is no Nirvana
-Without Sai's Bhajan there is no peace`
-  },
-  {
-    id: 16,
+    id: 13,
     title: "Sai Avatara Yuga Avatara",
-    category: "Sai Baba",
     lyrics: `Sai Avatara Yuga Avatara
 Yuga Avatara Tumhi Ho
 
@@ -1440,195 +1373,174 @@ Sai Brahma Sai Vishnu
 Sai Maheshwara
 
 Oh Supreme Lord Sai!
-You are the Incarnation of this Kali Age!
-You are the protector of the meek, the remover of danger
-You are Brahma, Vishnu and Maheshwara
-Chant the name of Lord Sathya Sai!`
+You are the Incarnation of this Kali Age!`,
+    audioUrl: "https://stream.radiosai.net:8000/"
+  },
+  {
+    id: 14,
+    title: "Hari Bhajana Bina",
+    lyrics: `Hari Bhajana Bina Sukha Shanti Nahin
+Hari Naam Bina Ananda Nahin
+
+Prema Bhakti Bina Uddhar Nahin
+Guru Seva Bina Nirvana Nahin
+
+Sai Bhajana Bina Sukha Shanti Nahin
+
+Without Hari Bhajan there is no happiness or peace
+Without divine Love there is no liberation
+Without Sai's Bhajan there is no peace`,
+    audioUrl: "https://stream.radiosai.net:8000/"
+  },
+  {
+    id: 15,
+    title: "Mandir Mein Tum Ram Ho",
+    lyrics: `Mandir Mein Tum Ram Ho Sai
+Mere Hi Mandir Mein Tum Ho
+
+Dil Bhi Tera Ghanesta Hai
+Har Ek Dhun Mein Tum Ho
+
+Mere Sai Baba Tum Ho
+Mere Hi Mandir Mein Tum Ho
+
+Tum Hi Daya Ke Chanda Hai
+Tum Hi Prem Ke Ganga Hai
+
+Mere Sai Baba Tum Ho
+Har Ek Dhun Mein Tum Ho`,
+    audioUrl: "https://stream.radiosai.net:8000/"
+  },
+  {
+    id: 16,
+    title: "Jo Bhi Hari Ka Bhajan",
+    lyrics: `Jo Bhi Hari Ka Bhajan Karey
+Woh Hi Brahma Hari Pad Paavey
+
+Sai Nath Jo Bhajana Karey
+Bhava Sagar Se Paar Karey
+
+Those who chant the name of Hari alone
+Reach the position of Brahman
+Those who chant the name of Sai
+Is sure to cross the cycle of birth and death`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   },
   {
     id: 17,
-    title: "Namah Shivaya",
-    category: "Shiva",
-    lyrics: `Namah Shivaya Namah Shivaya (8)
-Hara Hara Hara Hara Mahadeva
+    title: "Hey Parthi Purishwara",
+    lyrics: `Hey Parthi Purishwara Sai
+Hey Shirdipurishwara Sai
 
-Terey Dhyan Mey Khoyen Hum
-Sab Nis Din Tera Bhajan Karoon
+Tum Ho Daya Ke Sagar
+Tum Ho Bhakti Ke Aagar
 
-Hara Hara Hara Hara Mahadeva
-Tum Hi Badey Dayalu Ho
-Tum Hi Badey Krupalu
-Sathya Sai Hai Naam Tumhara
+Hey Parthi Purishwara Sai
+Mere Dil Ki Aasha Sai
 
-Namah Shivaya Namah Shivaya
-We bow to Shiva, the great Lord
-We contemplate on You always
-You are the most compassionate
-Sathya Sai is Your name`
+Tum Ho Mahima Bada
+Tum Ho Prema Ghada
+
+Mere Sai Baba Tum Ho
+Mere Dil Ka Suraj Ho`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   },
   {
     id: 18,
-    title: "Bhajare Rama Charan",
-    category: "Rama",
-    lyrics: `Bhajare Rama Charan
-Sri Rama Sri Rama
+    title: "Sadguru Dev Raaha Dikhao",
+    lyrics: `Sadguru Dev Raaha Dikhao
+Sadguru Dev Raaha Dikhao Prabhu
 
-Mane Mana Vaasamurai
-Sri Rama Sri Rama
+Raaha Dikhao Sai Deva
+Sadguru Dev Raaha Dikhao
 
-Evo Ksheemai
-Parathipuri Sri Rama
+Tum Ho Merey Prana Daata
+Tum Ho Merey Bhagya Daata
+Sadguru Dev Raaha Dikhao
 
-Ram Ram Bhajo Mana Harey
-Sri Rama Sri Rama
-
-Chant the name of Lord Rama
-Meditate on Him in the mind
-He is the Lord of Puttaparthi
-He protects all devotees`
+O Lord Sai, our Divine Preceptor
+Show us the path to liberation
+You are our Life Giver and Bestower of all prosperity`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   },
   {
     id: 19,
-    title: "Madhava Mohana",
-    category: "Krishna",
-    lyrics: `Madhava Mohana Gopala
-Sri Krishna Chaitanya Prabhu
+    title: "Mera Sai Kachhu Nahin",
+    lyrics: `Mera Sai Kachhu Nahin
+Mera Sai Yuhi Hai
 
-Madhava Mohana Muralidhara
-Vrindavana Vilashee
+Jo Tumko Paas Rakhna
+Woh Hai Hi Bas
 
-Madhava Mohana Hey Nandalala
-Kaisi Yeh Preet Lagi
+Sai Baba Mera Paalan
+Sai Baba Mera Jivan
 
-Madhava Mohana
-You are the enchanter of the mind
-Krishna, the holder of the flute
-The one who plays in Vrindavan
-The son of Nanda`
+Sai Baba Mera Aman
+Sai Baba Mera Jeevan
+
+Mera Sai Kachhu Nahin
+Bas Tumhaara Naam Hai`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   },
   {
     id: 20,
-    title: "Sri Ram Jaya Ram",
-    category: "Rama",
-    lyrics: `Sri Ram Jaya Ram Jaya Jaya Ram
-Janaki Jeevana Ram
+    title: "Bhajo Bhajo Ram Sathya Sai Ram",
+    lyrics: `Bhajo Bhajo Ram Sathya Sai Ram
+Ram Ram Ram Ram
 
-Ayodhya Raghunatha Ram
-Dasharatha Nandhana Ram
+Bhajo Bhajo Govind Sathya Sai Ram
+Govind Govind Govind Govind
 
-Sita Rama Radhe Shyam
-Raghupathi Raghava Raja Ram
+Ram Nam Ki Loot Hai
+Jo Loot Hai To
 
-Glory to Lord Rama
-The life of Janaki (Sita)
-The Lord of Ayodhya
-Son of Dasharatha`
-  },
-  {
-    id: 21,
-    title: "Radhe Govinda",
-    category: "Krishna",
-    lyrics: `Radhe Govinda Gopala
-Jaya Govinda Radhe Gopala
+Ram Naam Ki Dhan Hai
+Jo Dhan Hai To
 
-Radhe Shyama Hey Ghana Shyama
-Radha Madhava Radhe Shyama
+Ram Naam Loot Liyo
+Kalyan Gyan Liyo
 
-Giridhari Gopala
-Madhava Govinda
-
-Radhe Govinda Radhe Gopala
-Sairam
-
-Radha and Govinda are united
-Glory to Krishna, the dark-complexioned one
-The holder of the mountain
-The lover of Radha`
-  },
-  {
-    id: 22,
-    title: "Narayana Hari",
-    category: "Narayana",
-    lyrics: `Narayana Hari Nam
-Narayana Hari Nam
-
-Narayana Hari Bolo
-Narayana Hari Nam
-
-Narayana Narayana
-Hari Bolo Hare Ram
-
-We chant the name of Narayana (Lord Vishnu)
-He is the remover of sins
-Chant His name always`
-  },
-  {
-    id: 23,
-    title: "Vittala Vittala",
-    category: "Vittala",
-    lyrics: `Vittala Vittala Hari Vittala
-Panduranga Vitthala
-
-Hey Pandharinatha
-Vrittartti Golla Sree
-
-Vittala Vittala
-Murali Manohara
-
-Viththa (Lord Vittala) is Lord Vishnu
-He is the Lord of Pandharpur
-The one who holds the flute`
-  },
-  {
-    id: 24,
-    title: "Om Namah Shivaya",
-    category: "Shiva",
-    lyrics: `Om Namah Shivaya Shivaya Namah Om
-Om Namah Shivaya
-
-Hara Mahadeva
-Namah Shivaya
-
-Om Namah Shivaya Shivaya Namah Om
-Om Namah Shivaya
-
-We bow to Lord Shiva
-The great destroyer of evil
-The auspicious one`
-  },
-  {
-    id: 25,
-    title: "Ganesha Sharanam",
-    category: "Ganesha",
-    lyrics: `Ganesha Sharanam Parama Pavanam
-Ganesha Sharanam
-
-Vighna Nivara Kara
-Sarva Papa Vidhavera
-
-Lambodara Gajanana
-Gajavadhana Gananatha
-
-We seek refuge in Lord Ganesha
-The remover of obstacles
-The elephant-faced one
-The son of Parvati`
+Ram Naam Loot Liyo
+Moksha Mil Jayi`,
+    audioUrl: "https://stream.radiosai.net:8000/"
   }
 ];
 
 const BhajansScreen = () => {
   const [selectedBhajan, setSelectedBhajan] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [playingBhajan, setPlayingBhajan] = useState<number | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const allCategories = BHAJANS.map(b => b.category);
-  const categories = ['All', ...new Set(allCategories)];
+  const filteredBhajans = BHAJANS.filter(bhajan =>
+    bhajan.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const filteredBhajans = BHAJANS.filter(bhajan => {
-    const matchesSearch = bhajan.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || bhajan.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const togglePlay = (bhajanId: number, audioUrl: string) => {
+    if (playingBhajan === bhajanId) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      setPlayingBhajan(null);
+    } else {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      audioRef.current = new Audio(audioUrl);
+      audioRef.current.play();
+      setPlayingBhajan(bhajanId);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   if (selectedBhajan !== null) {
     const bhajan = BHAJANS.find(b => b.id === selectedBhajan);
@@ -1646,11 +1558,17 @@ const BhajansScreen = () => {
 
         <Card className="bg-surface-container-lowest border border-primary-fixed/20 p-6 space-y-4">
           <h3 className="text-xl font-headline font-bold text-center text-primary">{bhajan?.title}</h3>
-          <p className="text-xs text-center text-primary-fixed/60 uppercase">{bhajan?.category}</p>
           <div className="space-y-3 text-sm text-on-surface-variant leading-relaxed font-medium whitespace-pre-line">
             {bhajan?.lyrics}
           </div>
         </Card>
+
+        <Button 
+          className="w-full py-4" 
+          onClick={() => bhajan && togglePlay(bhajan.id, bhajan.audioUrl)}
+        >
+          {playingBhajan === bhajan?.id ? "Stop" : "Listen Live"}
+        </Button>
       </motion.div>
     );
   }
@@ -1658,6 +1576,18 @@ const BhajansScreen = () => {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-headline font-bold">Bhajans</h2>
+      
+      <Card className="bg-primary text-white p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+            <Music size={20} />
+          </div>
+          <div>
+            <p className="font-bold text-sm">Radio Sai Bhajans</p>
+            <p className="text-xs opacity-60">24/7 Live Streaming</p>
+          </div>
+        </div>
+      </Card>
       
       <div className="relative">
         <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40" />
@@ -1670,23 +1600,6 @@ const BhajansScreen = () => {
         />
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-2">
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={cn(
-              "px-4 py-2 rounded-full text-sm whitespace-nowrap transition-all",
-              selectedCategory === cat 
-                ? "bg-primary text-white" 
-                : "bg-surface-container-low border border-outline-variant/20"
-            )}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
       <div className="grid grid-cols-1 gap-2">
         {filteredBhajans.map(bhajan => (
           <button 
@@ -1695,7 +1608,7 @@ const BhajansScreen = () => {
             className="p-4 rounded-xl bg-surface-container-low border border-outline-variant/20 hover:border-primary/40 text-left transition-all"
           >
             <p className="font-bold text-sm">{bhajan.title}</p>
-            <p className="text-xs text-primary-fixed/60 mt-1">{bhajan.category}</p>
+            <p className="text-xs text-on-surface-variant/60 mt-1">Tap to view lyrics</p>
           </button>
         ))}
       </div>
