@@ -41,22 +41,27 @@ const generateId = () => `user_${Date.now()}_${Math.random().toString(36).substr
 
 const getTodayDate = () => new Date().toISOString().split('T')[0];
 
-const createInitialUser = (firebaseUser: FirebaseUser, provider: AuthProvider, name?: string): User => ({
-  id: firebaseUser.uid,
-  name: name || (provider === 'guest' ? 'Guest User' : firebaseUser.displayName || 'User'),
-  email: firebaseUser.email || undefined,
-  photoUrl: firebaseUser.photoURL || undefined,
-  phone: firebaseUser.phoneNumber || undefined,
-  provider,
-  createdAt: new Date().toISOString(),
-  streak: 0,
-  longestStreak: 0,
-  lastActiveDate: '',
-  totalDaysActive: 0,
-  completedParayanChapters: [],
-  completedAartis: 0,
-  journalEntries: []
-});
+const createInitialUser = (firebaseUser: FirebaseUser, provider: AuthProvider, name?: string): User => {
+  const user: User = {
+    id: firebaseUser.uid,
+    name: name || (provider === 'guest' ? 'Guest User' : firebaseUser.displayName || 'User'),
+    provider,
+    createdAt: new Date().toISOString(),
+    streak: 0,
+    longestStreak: 0,
+    lastActiveDate: '',
+    totalDaysActive: 0,
+    completedParayanChapters: [],
+    completedAartis: 0,
+    journalEntries: []
+  };
+
+  if (firebaseUser.email) user.email = firebaseUser.email;
+  if (firebaseUser.photoURL) user.photoUrl = firebaseUser.photoURL;
+  if (firebaseUser.phoneNumber) user.phone = firebaseUser.phoneNumber;
+
+  return user;
+};
 
 export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -127,7 +132,8 @@ export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ child
 
     try {
       if (currentUser.id) {
-        await updateDoc(doc(db, 'users', currentUser.id), updatedUser);
+        const cleanUpdate = JSON.parse(JSON.stringify(updatedUser));
+        await updateDoc(doc(db, 'users', currentUser.id), cleanUpdate);
       }
     } catch (error) {
       console.error('Error updating streak:', error);
@@ -216,7 +222,8 @@ export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ child
   const updateUserData = async (data: Partial<User>) => {
     if (user && user.id) {
       try {
-        await updateDoc(doc(db, 'users', user.id), data);
+        const cleanData = JSON.parse(JSON.stringify(data));
+        await updateDoc(doc(db, 'users', user.id), cleanData);
       } catch (error) {
         console.error('Error updating user data:', error);
       }
