@@ -17,7 +17,13 @@ const AuthScreen = ({ onComplete }: { onComplete: () => void }) => {
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [recaptchaVerifier, setRecaptchaVerifier] = useState<any>(null);
   
-  const { signInWithGoogle, signInWithPhone, verifyOTP, signInAsGuest } = useAuth();
+  const { signInWithGoogle, signInWithPhone, verifyOTP, signInAsGuest, user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      onComplete();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (step === 'phone' && !recaptchaRef.current) {
