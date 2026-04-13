@@ -1,10 +1,22 @@
-import { StrictMode } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { StrictMode } from 'react';
 import './index.css';
 
-const root = document.getElementById('root');
-if (root) {
-  root.innerHTML = '<h1 style="color:red;font-size:48px;padding:50px;text-align:center;">SAI SEVA AI - TEST</h1>';
-} else {
-  document.body.innerHTML = '<h1 style="color:red;font-size:48px;">NO ROOT</h1>';
+const rootEl = document.getElementById('root');
+console.log('Root element:', rootEl);
+console.log('React version:', React.version);
+
+if (!rootEl) {
+  document.body.innerHTML = 'NO ROOT ELEMENT FOUND';
+  throw new Error('No root element');
 }
+
+createRoot(rootEl).render(
+  <StrictMode>
+    <div style={{ padding: 50, textAlign: 'center', background: '#fff8f6', minHeight: '100vh' }}>
+      <h1 style={{ color: '#805600', fontSize: 48 }}>SAI SEVA AI</h1>
+      <p>React loaded successfully!</p>
+    </div>
+  </StrictMode>
+);
