@@ -6,14 +6,16 @@ import {
   Play, Pause, ChevronRight, Search, Filter,
   Clock, Users, CheckCircle2, Info, Share2,
   Mic, Send, Save, ArrowLeft, Volume2, VolumeX,
-  SkipBack, SkipForward, Repeat, Music, Square
+  SkipBack, SkipForward, Repeat, Music, Square, LogOut, Flame
 } from 'lucide-react';
 import { cn } from './lib/utils';
 import { NavItem, Card, Button, Toast } from './components/BaseUI';
+import AuthScreen from './components/AuthScreen';
 import { Mood, ChatMessage, Aarti, SevaSuggestion, Temple, SaiAnswer, JournalEntry } from './types';
 import { AARTIS, SEVA_SUGGESTIONS, TEMPLES, SAI_TEACHINGS } from './data';
 import { askSai, getMoodGuidance, getDailyGuidance, interpretSaiAnswer } from './services/geminiService';
 import { getSaiAnswer } from './data/saiAnswers';
+import { useAuth } from './contexts/AuthContext';
 
 // --- Sub-components for Screens ---
 
@@ -21,9 +23,9 @@ const HomeScreen = ({ onNavigate }: { onNavigate: (s: string) => void }) => {
   const isThursday = new Date().getDay() === 4;
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { user, updateUserStreak } = useAuth();
 
   useEffect(() => {
-    // Using a reliable MP3 source instead of OGG to ensure cross-browser compatibility
     audioRef.current = new Audio('https://cdn.freesound.org/previews/118/118237_1662148-lq.mp3');
     audioRef.current.loop = true;
     return () => {
@@ -34,6 +36,12 @@ const HomeScreen = ({ onNavigate }: { onNavigate: (s: string) => void }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      updateUserStreak();
+    }
+  }, [user]);
+
   const toggleAudio = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -42,6 +50,23 @@ const HomeScreen = ({ onNavigate }: { onNavigate: (s: string) => void }) => {
       audioRef.current.play().catch(e => console.error("Audio play failed:", e));
     }
     setIsPlaying(!isPlaying);
+  };
+
+  const getLast7Days = () => {
+    const days = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      days.push(d.toISOString().split('T')[0]);
+    }
+    return days;
+  };
+
+  const isDayActive = (dayStr: string) => {
+    if (!user) return false;
+    if (dayStr === user.lastActiveDate) return true;
+    return false;
   };
 
   return (
@@ -58,18 +83,22 @@ const HomeScreen = ({ onNavigate }: { onNavigate: (s: string) => void }) => {
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">Active Streak</p>
-            <p className="text-base font-bold text-primary">12 Days</p>
+            <p className="text-base font-bold text-primary">{user?.streak || 0} Days</p>
           </div>
         </div>
         <div className="flex -space-x-1">
-          {['M', 'T', 'W', 'T', 'F'].map((d, i) => (
-            <div key={i} className={cn(
-              "w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-surface",
-              i < 4 ? "bg-primary-container text-on-primary-container" : "bg-surface-container-highest text-on-surface-variant/40"
-            )}>
-              {d}
-            </div>
-          ))}
+          {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => {
+            const dayStr = getLast7Days()[i];
+            const active = isDayActive(dayStr);
+            return (
+              <div key={i} className={cn(
+                "w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-surface",
+                active ? "bg-primary-container text-on-primary-container" : "bg-surface-container-highest text-on-surface-variant/40"
+              )}>
+                {d}
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -1958,6 +1987,7 @@ const ThursdayScreen = () => {
 };
 
 const ProfileScreen = () => {
+  const { user, signOut } = useAuth();
   const [savedAnswers, setSavedAnswers] = useState<any[]>([]);
   const [savedGuidance, setSavedGuidance] = useState<any[]>([]);
 
@@ -1976,30 +2006,58 @@ const ProfileScreen = () => {
   return (
     <div className="space-y-8 pb-12">
       <div className="flex flex-col items-center text-center space-y-4">
-        <div className="w-24 h-24 rounded-full bg-primary-fixed p-1 border-4 border-white shadow-xl flex items-center justify-center">
-          <User size={48} className="text-white" />
+        <div className="w-24 h-24 rounded-full bg-primary-fixed p-1 border-4 border-white shadow-xl flex items-center justify-center overflow-hidden">
+          {user?.photoUrl ? (
+            <img src={user.photoUrl} alt={user.name} className="w-full h-full object-cover rounded-full" />
+          ) : (
+            <User size={48} className="text-white" />
+          )}
         </div>
         <div>
-          <h2 className="text-2xl font-headline font-bold">Sai Devotee</h2>
-          <p className="text-sm text-on-surface-variant/60">srirampujar@gmail.com</p>
+          <h2 className="text-2xl font-headline font-bold">{user?.name || 'Sai Devotee'}</h2>
+          <p className="text-sm text-on-surface-variant/60">{user?.email || user?.phone || 'Guest User'}</p>
+          <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full uppercase">
+            {user?.provider || 'guest'}
+          </span>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <Card className="text-center p-6 space-y-2">
-          <p className="text-[10px] font-bold text-on-surface-variant/60 uppercase">Total Parayans</p>
-          <p className="text-2xl font-headline font-bold text-primary">04</p>
+          <p className="text-[10px] font-bold text-on-surface-variant/60 uppercase">Streak</p>
+          <div className="flex items-center justify-center gap-2">
+            <Flame size={24} className="text-secondary" />
+            <p className="text-2xl font-headline font-bold text-secondary">{user?.streak || 0}</p>
+          </div>
         </Card>
         <Card className="text-center p-6 space-y-2">
-          <p className="text-[10px] font-bold text-on-surface-variant/60 uppercase">Seva Streak</p>
-          <p className="text-2xl font-headline font-bold text-secondary">12</p>
+          <p className="text-[10px] font-bold text-on-surface-variant/60 uppercase">Longest</p>
+          <div className="flex items-center justify-center gap-2">
+            <Sparkles size={24} className="text-primary" />
+            <p className="text-2xl font-headline font-bold text-primary">{user?.longestStreak || 0}</p>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        <Card className="text-center p-4 space-y-1">
+          <p className="text-xl font-headline font-bold text-primary">{user?.totalDaysActive || 0}</p>
+          <p className="text-[10px] font-bold text-on-surface-variant/60 uppercase">Active Days</p>
+        </Card>
+        <Card className="text-center p-4 space-y-1">
+          <p className="text-xl font-headline font-bold text-primary">{user?.completedParayanChapters?.length || 0}</p>
+          <p className="text-[10px] font-bold text-on-surface-variant/60 uppercase">Chapters</p>
+        </Card>
+        <Card className="text-center p-4 space-y-1">
+          <p className="text-xl font-headline font-bold text-primary">{user?.completedAartis || 0}</p>
+          <p className="text-[10px] font-bold text-on-surface-variant/60 uppercase">Aartis</p>
         </Card>
       </div>
 
       <div className="space-y-4">
         <h3 className="text-sm font-bold text-on-surface-variant/60 uppercase tracking-widest px-2">Saved Guidance</h3>
         <div className="space-y-3">
-          {allSaved.length > 0 ? allSaved.map((entry, i) => (
+          {allSaved.length > 0 ? allSaved.slice(0, 5).map((entry, i) => (
             <Card key={i} className="p-4 flex justify-between items-center hover:bg-primary-fixed/5 transition-all cursor-pointer">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -2042,7 +2100,9 @@ const ProfileScreen = () => {
         </div>
       </div>
 
-      <Button variant="outline" className="w-full text-secondary border-secondary/20 hover:bg-secondary/5">Sign Out</Button>
+      <Button variant="outline" className="w-full text-secondary border-secondary/20 hover:bg-secondary/5" onClick={signOut}>
+        <LogOut size={18} className="mr-2" /> Sign Out
+      </Button>
     </div>
   );
 };
@@ -2168,31 +2228,7 @@ export default function App() {
   }
 
   if (!isAuth) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 sacred-glow">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md bg-white/40 backdrop-blur-xl p-10 rounded-3xl border border-white/20 shadow-2xl flex flex-col items-center text-center"
-        >
-          <div className="w-32 h-32 rounded-full bg-primary-fixed/20 flex items-center justify-center mb-8 border-4 border-primary-fixed/30 shadow-2xl">
-            <Sparkles size={48} className="text-primary" />
-          </div>
-          <div className="space-y-4 mb-12">
-            <h2 className="text-3xl font-headline font-bold tracking-tight">Step into the Sacred Presence</h2>
-            <p className="text-on-surface-variant italic">"Why fear when I am here?"</p>
-          </div>
-          <div className="w-full space-y-4">
-            <Button variant="outline" className="w-full py-4 flex items-center justify-center gap-3" onClick={() => setIsAuth(true)}>
-              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-              Continue with Google
-            </Button>
-            <Button className="w-full py-4" onClick={() => setIsAuth(true)}>Phone Number</Button>
-            <button className="text-primary font-bold text-sm mt-4 hover:underline" onClick={() => setIsAuth(true)}>Continue as Guest</button>
-          </div>
-        </motion.div>
-      </div>
-    );
+    return <AuthScreen onComplete={() => setIsAuth(true)} />;
   }
 
   return (

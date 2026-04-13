@@ -1,5 +1,24 @@
 export type Mood = 'peaceful' | 'seeking' | 'anxious' | 'grateful' | 'overwhelmed' | 'sad' | 'stressed' | 'confused' | 'in_pain';
 
+export type AuthProvider = 'phone' | 'google' | 'guest';
+
+export interface User {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  photoUrl?: string;
+  provider: AuthProvider;
+  createdAt: string;
+  streak: number;
+  longestStreak: number;
+  lastActiveDate: string;
+  totalDaysActive: number;
+  completedParayanChapters: number[];
+  completedAartis: number;
+  journalEntries: string[];
+}
+
 export interface AartiSyncLine {
   time: number;
   text: string;
