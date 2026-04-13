@@ -6,14 +6,13 @@ import {
   signInAnonymously, 
   firebaseSignOut, 
   signInWithPhoneNumber, 
-  ConfirmationResult,
-  FirebaseUser,
   db,
   doc,
   setDoc,
   getDoc,
   updateDoc
 } from '../lib/firebase';
+import type { ConfirmationResult, FirebaseUser } from '../lib/firebase';
 import { User, AuthProvider } from '../types';
 
 interface AuthContextType {
