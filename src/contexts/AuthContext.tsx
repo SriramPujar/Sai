@@ -39,6 +39,34 @@ const generateId = () => `user_${Date.now()}_${Math.random().toString(36).substr
 
 const getTodayDate = () => new Date().toISOString().split('T')[0];
 
+const USER_CACHE_KEY = 'saiseva_user_cache';
+
+const saveUserToCache = (user: User) => {
+  try { localStorage.setItem(USER_CACHE_KEY, JSON.stringify(user)); } catch (_) {}
+};
+
+const loadUserFromCache = (uid: string): User | null => {
+  try {
+    const raw = localStorage.getItem(USER_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as User;
+    return parsed.id === uid ? parsed : null;
+  } catch (_) { return null; }
+};
+
+const clearUserCache = () => {
+  try { localStorage.removeItem(USER_CACHE_KEY); } catch (_) {}
+};
+
+// Resolves in ms or times out
+const withTimeout = <T,>(promise: Promise<T>, ms: number): Promise<T> =>
+  Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), ms)
+    )
+  ]);
+
 const createInitialUser = (firebaseUser: FirebaseUser, provider: AuthProvider, name?: string): User => {
   const user: User = {
     id: firebaseUser.uid,
@@ -70,33 +98,60 @@ export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ child
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       setFirebaseUser(fbUser);
       if (fbUser) {
-        try {
-          await loadOrCreateUser(fbUser);
-        } catch (error) {
-          console.error('Error loading user:', error);
+        // 1. Immediately restore from cache — zero wait
+        const cached = loadUserFromCache(fbUser.uid);
+        if (cached) {
+          setUser(cached);
+          setLoading(false);
+          // Sync from Firestore in background (no UI block)
+          syncUserFromFirestore(fbUser).then(u => { if (u) { setUser(u); saveUserToCache(u); } });
+        } else {
+          // No cache — must wait for Firestore, but with a timeout
+          try {
+            await loadOrCreateUser(fbUser);
+          } catch (error) {
+            console.warn('Error loading user, using fallback:', error);
+            const fallback = createInitialUser(fbUser, 'credentials');
+            setUser(fallback);
+          }
+          setLoading(false);
         }
       } else {
         setUser(null);
+        clearUserCache();
+        setLoading(false);
       }
-      setLoading(false);
     });
     return unsubscribe;
   }, []);
 
+  const syncUserFromFirestore = async (fbUser: FirebaseUser): Promise<User | null> => {
+    try {
+      const userDoc = await withTimeout(getDoc(doc(db, 'users', fbUser.uid)), 5000);
+      if (userDoc.exists()) return userDoc.data() as User;
+    } catch (_) {}
+    return null;
+  };
+
   const loadOrCreateUser = async (fbUser: FirebaseUser) => {
     try {
-      const userDoc = await getDoc(doc(db, 'users', fbUser.uid));
+      const userDoc = await withTimeout(getDoc(doc(db, 'users', fbUser.uid)), 5000);
       if (userDoc.exists()) {
-        setUser(userDoc.data() as User);
+        const u = userDoc.data() as User;
+        setUser(u);
+        saveUserToCache(u);
       } else {
         const newUser = createInitialUser(fbUser, 'credentials');
-        await setDoc(doc(db, 'users', fbUser.uid), newUser);
         setUser(newUser);
+        saveUserToCache(newUser);
+        // Write to Firestore in background
+        setDoc(doc(db, 'users', fbUser.uid), newUser).catch(console.warn);
       }
     } catch (error) {
-      console.error('Error in loadOrCreateUser:', error);
-      const newUser = createInitialUser(fbUser, 'credentials');
-      setUser(newUser);
+      console.warn('Error in loadOrCreateUser (offline or timeout):', error);
+      const fallback = createInitialUser(fbUser, 'credentials');
+      setUser(fallback);
+      saveUserToCache(fallback);
     }
   };
 
@@ -144,7 +199,10 @@ export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ child
     try {
       const email = `${username.toLowerCase()}@saiseva.app`;
       const result = await signInWithEmailAndPassword(auth, email, pass);
-      await loadOrCreateUser(result.user);
+      // Don't wait for Firestore — auth state listener handles it
+      const cached = loadUserFromCache(result.user.uid);
+      if (cached) { setUser(cached); setLoading(false); }
+      syncUserFromFirestore(result.user).then(u => { if (u) { setUser(u); saveUserToCache(u); } });
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -159,8 +217,10 @@ export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ child
       const email = `${username.toLowerCase()}@saiseva.app`;
       const result = await createUserWithEmailAndPassword(auth, email, pass);
       const newUser = createInitialUser(result.user, 'credentials', username);
-      await setDoc(doc(db, 'users', result.user.uid), newUser);
       setUser(newUser);
+      saveUserToCache(newUser);
+      // Write to Firestore in background
+      setDoc(doc(db, 'users', result.user.uid), newUser).catch(console.warn);
     } catch (error) {
       console.error('Sign up error:', error);
       throw error;
@@ -174,8 +234,10 @@ export const AuthProviderComponent: React.FC<{ children: ReactNode }> = ({ child
     try {
       const result = await signInAnonymously(auth);
       const newUser = createInitialUser(result.user, 'guest');
-      await setDoc(doc(db, 'users', result.user.uid), newUser);
       setUser(newUser);
+      saveUserToCache(newUser);
+      // Write to Firestore in background
+      setDoc(doc(db, 'users', result.user.uid), newUser).catch(console.warn);
     } catch (error) {
       console.error('Guest sign in error:', error);
       throw error;

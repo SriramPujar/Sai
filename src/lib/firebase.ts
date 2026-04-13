@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged, signOut as firebaseSignOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs, orderBy, limit, Timestamp } from 'firebase/firestore';
+import { getFirestore, enableIndexedDbPersistence, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs, orderBy, limit, Timestamp } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: String(import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCYYgvXs63FgQpUdOGqcnq_QEaaKZ2PwbQ").trim(),
@@ -14,5 +14,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+// Enable offline persistence for Firestore
+enableIndexedDbPersistence(db).catch((err) => {
+  if (err.code === 'failed-precondition') {
+    // Multiple tabs open, only first tab can use persistence
+    console.warn('Firestore persistence unavailable (multiple tabs)');
+  } else if (err.code === 'unimplemented') {
+    console.warn('Firestore persistence not supported in this browser');
+  }
+});
+
 export { getAuth, signInAnonymously, onAuthStateChanged, firebaseSignOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs, orderBy, limit, Timestamp };
 export type { User as FirebaseUser, ConfirmationResult } from 'firebase/auth';
