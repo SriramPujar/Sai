@@ -29,6 +29,17 @@ const AuthScreen = ({ onComplete }: { onComplete: () => void }) => {
     if (step === 'phone' && !recaptchaRef.current) {
       loadRecaptcha();
     }
+    
+    return () => {
+      if (step === 'phone' && recaptchaRef.current) {
+        // clear RecaptchaVerifier to avoid stale DOM references
+        try {
+          recaptchaRef.current.clear();
+        } catch (e) {}
+        recaptchaRef.current = null;
+        setRecaptchaVerifier(null);
+      }
+    };
   }, [step]);
 
   const loadRecaptcha = async () => {
@@ -36,11 +47,12 @@ const AuthScreen = ({ onComplete }: { onComplete: () => void }) => {
       const { getAuth, RecaptchaVerifier } = await import('../lib/firebase');
       const auth = getAuth();
       
-      if (!recaptchaVerifier) {
+      if (!recaptchaRef.current) {
         const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
           size: 'invisible',
           callback: () => {}
         });
+        recaptchaRef.current = verifier;
         setRecaptchaVerifier(verifier);
       }
     } catch (err) {

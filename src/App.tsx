@@ -26,7 +26,7 @@ const HomeScreen = ({ onNavigate }: { onNavigate: (s: string) => void }) => {
   const { user, updateUserStreak } = useAuth();
 
   useEffect(() => {
-    audioRef.current = new Audio('https://cdn.freesound.org/previews/118/118237_1662148-lq.mp3');
+    audioRef.current = new Audio('https://upload.wikimedia.org/wikipedia/commons/4/4e/Tibetan_singing_bowl.ogg');
     audioRef.current.loop = true;
     return () => {
       if (audioRef.current) {
@@ -47,7 +47,7 @@ const HomeScreen = ({ onNavigate }: { onNavigate: (s: string) => void }) => {
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.play().catch(e => console.error("Audio play failed:", e));
+      audioRef.current.play().catch(e => console.warn("Audio play failed:", e));
     }
     setIsPlaying(!isPlaying);
   };
